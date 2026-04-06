@@ -22,10 +22,10 @@ export const UpdateProfileBody = z.object({
 export const CreateTaskBody = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
-  priority: z.enum(["low", "medium", "high"]).default("medium"),
-  category: z.enum(["work", "personal", "study", "health", "finance"]).default("personal"),
-  recurrence: z.enum(["none", "daily", "weekly", "monthly"]).default("none"),
-  estimatedPomodoros: z.number().int().min(1).default(1),
+  priority: z.enum(["low", "medium", "high"]).optional(),
+  category: z.enum(["work", "personal", "study", "health", "finance"]).optional(),
+  recurrence: z.enum(["none", "daily", "weekly", "monthly"]).optional(),
+  estimatedPomodoros: z.number().int().min(1).optional(),
   startDate: z.string().datetime().nullish(),
   deadlineDate: z.string().datetime().nullish(),
   reminderTime: z.string().datetime().nullish(),
@@ -67,12 +67,12 @@ export const CreateHabitBody = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   frequency: z.string(), // 'daily', 'weekly'
-  target: z.number().int().min(1).default(1),
+  target: z.number().int().min(1).optional(),
   icon: z.string().optional(),
   color: z.string().optional(),
 });
 
 export const LogHabitBody = z.object({
   date: z.string().datetime(),
-  completedValue: z.number().int().min(1).default(1),
+  completedValue: z.number().int().min(1).optional(),
 });

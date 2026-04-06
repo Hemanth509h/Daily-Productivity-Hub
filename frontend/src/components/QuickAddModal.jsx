@@ -8,8 +8,8 @@ export default function QuickAddModal({ onClose }) {
   const [form, setForm] = useState({
     title: '',
     description: '',
-    priority: 'medium',
-    category: 'work',
+    priority: '',
+    category: '',
     deadlineDate: '',
   });
 
@@ -20,8 +20,8 @@ export default function QuickAddModal({ onClose }) {
       data: {
         title: form.title.trim(),
         description: form.description || null,
-        priority: form.priority,
-        category: form.category,
+        ...(form.priority && { priority: form.priority }),
+        ...(form.category && { category: form.category }),
         deadlineDate: form.deadlineDate ? new Date(form.deadlineDate).toISOString() : null,
       },
     }, {
@@ -68,6 +68,7 @@ export default function QuickAddModal({ onClose }) {
                 onChange={(e) => setForm({ ...form, priority: e.target.value })}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-ring bg-white"
               >
+                <option value="">Select...</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
@@ -80,6 +81,7 @@ export default function QuickAddModal({ onClose }) {
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-ring bg-white"
               >
+                <option value="">Select...</option>
                 <option value="work">Work</option>
                 <option value="personal">Personal</option>
                 <option value="study">Study</option>

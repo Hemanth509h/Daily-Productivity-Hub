@@ -10,7 +10,7 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export default function Habits() {
   const qc = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
-  const [newHabit, setNewHabit] = useState({ name: '', frequency: 'daily', target: 1 });
+  const [newHabit, setNewHabit] = useState({ name: '', frequency: '', target: '' });
 
   const { data: habits, isLoading } = useQuery({
     queryKey: ['habits'],
@@ -22,7 +22,7 @@ export default function Habits() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['habits'] });
       setShowAdd(false);
-      setNewHabit({ name: '', frequency: 'daily', target: 1 });
+      setNewHabit({ name: '', frequency: '', target: '' });
     }
   });
 
@@ -79,6 +79,7 @@ export default function Habits() {
                     onChange={(e) => setNewHabit(h => ({ ...h, frequency: e.target.value }))}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm"
                   >
+                    <option value="">Select...</option>
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
                   </select>

@@ -5,7 +5,7 @@ const activitySchema = new mongoose.Schema({
   action: { type: String, required: true }, // e.g., 'task_completed', 'habit_streak'
   targetId: { type: mongoose.Schema.Types.ObjectId },
   targetType: { type: String }, // 'Task', 'Habit', 'PomodoroSession'
-  pointsEarned: { type: Number, default: 0 },
+  pointsEarned: { type: Number },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

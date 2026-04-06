@@ -4,8 +4,8 @@ const habitSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   name: { type: String, required: true },
   description: { type: String },
-  frequency: { type: String, required: true, default: 'daily' }, // 'daily', 'weekly'
-  target: { type: Number, default: 1 },
+  frequency: { type: String, required: true },
+  target: { type: Number },
   icon: { type: String },
   color: { type: String },
 }, {
