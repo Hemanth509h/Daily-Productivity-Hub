@@ -67,4 +67,60 @@ router.get("/auth/me", requireAuth, async (req, res): Promise<void> => {
   res.json({ id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() });
 });
 
+router.patch("/auth/profile", requireAuth, async (req, res): Promise<void> => {
+  const { name, email, currentPassword, newPassword } = req.body;
+
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.user!.userId));
+  if (!user) {
+    res.status(401).json({ error: "User not found" });
+    return;
+  }
+
+  const updates: Record<string, unknown> = {};
+
+  if (name && typeof name === "string" && name.trim()) {
+    updates.name = name.trim();
+  }
+
+  if (email && typeof email === "string" && email.trim() && email !== user.email) {
+    const existing = await db.select().from(usersTable).where(eq(usersTable.email, email.trim()));
+    if (existing.length > 0 && existing[0].id !== user.id) {
+      res.status(409).json({ error: "Email already in use by another account" });
+      return;
+    }
+    updates.email = email.trim();
+  }
+
+  if (newPassword) {
+    if (!currentPassword) {
+      res.status(400).json({ error: "Current password is required to set a new password" });
+      return;
+    }
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) {
+      res.status(400).json({ error: "Current password is incorrect" });
+      return;
+    }
+    if (newPassword.length < 6) {
+      res.status(400).json({ error: "New password must be at least 6 characters" });
+      return;
+    }
+    updates.password = await bcrypt.hash(newPassword, 10);
+  }
+
+  if (Object.keys(updates).length === 0) {
+    res.status(400).json({ error: "No changes to save" });
+    return;
+  }
+
+  updates.updatedAt = new Date();
+  const [updated] = await db
+    .update(usersTable)
+    .set(updates)
+    .where(eq(usersTable.id, req.user!.userId))
+    .returning();
+
+  res.json({ id: updated.id, name: updated.name, email: updated.email, createdAt: updated.createdAt.toISOString() });
+});
+
 export default router;
