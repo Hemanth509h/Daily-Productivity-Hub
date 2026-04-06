@@ -6,8 +6,8 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(() => localStorage.getItem('memorize_access_token'));
-  const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem('memorize_refresh_token'));
+  const [accessToken, setAccessToken] = useState(() => localStorage.getItem('sanctuary_access_token'));
+  const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem('sanctuary_refresh_token'));
   const [loading, setLoading] = useState(true);
 
   // Configure API client to use the access token
@@ -16,8 +16,8 @@ export function AuthProvider({ children }) {
   }, [accessToken]);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('memorize_access_token');
-    localStorage.removeItem('memorize_refresh_token');
+    localStorage.removeItem('sanctuary_access_token');
+    localStorage.removeItem('sanctuary_refresh_token');
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
         method: 'POST',
         body: JSON.stringify({ refreshToken })
       });
-      localStorage.setItem('memorize_access_token', data.accessToken);
+      localStorage.setItem('sanctuary_access_token', data.accessToken);
       setAccessToken(data.accessToken);
       return data.accessToken;
     } catch (err) {
@@ -68,8 +68,8 @@ export function AuthProvider({ children }) {
   }, [accessToken, refreshSession]);
 
   const login = useCallback((authData) => {
-    localStorage.setItem('memorize_access_token', authData.accessToken);
-    localStorage.setItem('memorize_refresh_token', authData.refreshToken);
+    localStorage.setItem('sanctuary_access_token', authData.accessToken);
+    localStorage.setItem('sanctuary_refresh_token', authData.refreshToken);
     setAccessToken(authData.accessToken);
     setRefreshToken(authData.refreshToken);
     setUser(authData.user);

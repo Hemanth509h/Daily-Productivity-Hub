@@ -12,23 +12,15 @@ dotenv.config();
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error('MONGODB_URI is not defined in .env file');
+  console.error('MONGODB_URI is not defined. Please set it in environment variables.');
+  process.exit(1);
 }
 
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err));
-
-export const db = {
-  query: {
-    users: {
-      findFirst: async ({ where }) => {
-        // Simple shim for findFirst if needed by existing code
-        // Note: Routes should be migrated to native Mongoose calls
-        return User.findOne(where);
-      }
-    }
-  }
-};
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 export { User, Task, Habit, HabitLog, Activity, PomodoroSession };
