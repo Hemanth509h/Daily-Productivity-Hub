@@ -1,21 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { IconPlay, IconPause, IconRefresh } from './Icons.jsx';
 
 const DURATIONS = [
-  { label: '25 min', seconds: 25 * 60 },
-  { label: '15 min', seconds: 15 * 60 },
-  { label: '50 min', seconds: 50 * 60 },
+  { label: '15m', seconds: 15 * 60 },
+  { label: '25m', seconds: 25 * 60 },
+  { label: '50m', seconds: 50 * 60 },
 ];
 
 export default function FocusTimer({ taskName }) {
-  const [duration, setDuration] = useState(DURATIONS[0].seconds);
-  const [timeLeft, setTimeLeft] = useState(duration);
+  const [duration, setDuration] = useState(DURATIONS[1].seconds);
+  const [timeLeft, setTimeLeft] = useState(DURATIONS[1].seconds);
   const [running, setRunning] = useState(false);
-  const [sessionName, setSessionName] = useState(taskName || 'Focus Session');
+  const [sessionName] = useState(taskName || 'Focus Session');
   const intervalRef = useRef(null);
-
-  useEffect(() => {
-    if (taskName) setSessionName(taskName);
-  }, [taskName]);
 
   useEffect(() => {
     if (running) {
@@ -25,7 +22,7 @@ export default function FocusTimer({ taskName }) {
             clearInterval(intervalRef.current);
             setRunning(false);
             if ('Notification' in window && Notification.permission === 'granted') {
-              new Notification('Sanctuary', { body: `Focus session complete: ${sessionName}` });
+              new Notification('Sanctuary', { body: `Session complete: ${sessionName}` });
             }
             return 0;
           }
@@ -45,43 +42,64 @@ export default function FocusTimer({ taskName }) {
   };
 
   const toggle = () => {
-    if (timeLeft === 0) {
-      setTimeLeft(duration);
-    }
+    if (timeLeft === 0) setTimeLeft(duration);
     setRunning(!running);
   };
 
+  const reset = () => { setRunning(false); setTimeLeft(duration); };
+
   const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  const progress = ((duration - timeLeft) / duration) * 100;
 
   return (
-    <div className="mt-4 flex items-center justify-between bg-white border border-border rounded-xl px-4 py-3 shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className={`w-2.5 h-2.5 rounded-full ${running ? 'bg-green-400 animate-pulse' : 'bg-muted-foreground/30'}`} />
-        <span className="text-sm font-semibold text-foreground">{sessionName}</span>
-        <span className="text-muted-foreground/30 text-sm">|</span>
-        <div className="flex gap-1.5">
-          {DURATIONS.map((d) => (
-            <button
-              key={d.seconds}
-              onClick={() => handleDuration(d.seconds)}
-              className={`text-xs px-2 py-0.5 rounded-full transition-colors ${
-                duration === d.seconds ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-accent'
-              }`}
-            >
-              {d.label}
-            </button>
-          ))}
-        </div>
+    <div className="flex items-center gap-3.5 bg-white rounded-2xl px-4 py-3"
+      style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid hsl(213,25%,90%)' }}>
+      {/* Status dot */}
+      <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors ${running ? 'bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.6)]' : 'bg-muted-foreground/25'}`} />
+
+      {/* Session name */}
+      <span className="text-[12.5px] font-semibold text-foreground/70 truncate max-w-[120px]">{sessionName}</span>
+
+      <div className="w-px h-4 bg-border mx-1" />
+
+      {/* Duration pills */}
+      <div className="flex gap-1">
+        {DURATIONS.map((d) => (
+          <button key={d.seconds} onClick={() => handleDuration(d.seconds)}
+            className={`text-[11px] px-2 py-1 rounded-full font-bold transition-all ${
+              duration === d.seconds
+                ? 'bg-foreground text-white shadow-sm'
+                : 'text-muted-foreground hover:bg-muted'
+            }`}>
+            {d.label}
+          </button>
+        ))}
       </div>
-      <div className="flex items-center gap-3">
-        <span className="text-xl font-bold font-mono text-foreground tabular-nums">{fmt(timeLeft)}</span>
-        <button
-          onClick={toggle}
-          className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors ${
-            running ? 'bg-amber-500 hover:bg-amber-600' : 'bg-primary hover:opacity-90'
-          }`}
-        >
-          {running ? '⏸' : timeLeft === 0 ? '↺' : '▶'}
+
+      <div className="flex-1" />
+
+      {/* Progress bar */}
+      <div className="w-24 h-1.5 rounded-full overflow-hidden flex-shrink-0" style={{ background: 'hsl(213,25%,90%)' }}>
+        <div className="h-full rounded-full transition-all duration-1000"
+          style={{ width: `${progress}%`, background: running ? 'linear-gradient(90deg, #4F46E5, #7C3AED)' : 'hsl(215,20%,65%)' }} />
+      </div>
+
+      {/* Time display */}
+      <div className="text-[18px] font-bold font-mono text-foreground tabular-nums tracking-tight flex-shrink-0">
+        {fmt(timeLeft)}
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        <button onClick={reset}
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-colors">
+          <IconRefresh size={13} />
+        </button>
+        <button onClick={toggle}
+          className={`w-8 h-8 flex items-center justify-center rounded-xl text-white transition-all hover:shadow-md hover:scale-105 ${
+            running ? 'bg-amber-500' : 'bg-primary'
+          }`}>
+          {running ? <IconPause size={13} /> : <IconPlay size={13} />}
         </button>
       </div>
     </div>
