@@ -1,28 +1,39 @@
 import jwt from "jsonwebtoken";
-const JWT_SECRET = process.env.SESSION_SECRET ?? "fallback-secret-change-me";
-function signToken(payload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "30d" });
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "fallback-access-secret";
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "fallback-refresh-secret";
+
+export function signAccessToken(payload) {
+  return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 }
-function verifyToken(token) {
-  return jwt.verify(token, JWT_SECRET);
+
+export function signRefreshToken(payload) {
+  return jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: "30d" });
 }
-function requireAuth(req, res, next) {
+
+export function verifyAccessToken(token) {
+  return jwt.verify(token, ACCESS_TOKEN_SECRET);
+}
+
+export function verifyRefreshToken(token) {
+  return jwt.verify(token, REFRESH_TOKEN_SECRET);
+}
+
+export function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
-  const token = authHeader.slice(7);
+
+  const token = authHeader.split(" ")[1];
   try {
-    const payload = verifyToken(token);
+    const payload = verifyAccessToken(token);
     req.user = payload;
     next();
-  } catch {
-    res.status(401).json({ error: "Invalid or expired token" });
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
 }
-export {
-  requireAuth,
-  signToken,
-  verifyToken
-};

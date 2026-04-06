@@ -1,105 +1,105 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
-import { db, usersTable } from "@workspace/db";
-import { RegisterBody, LoginBody } from "@workspace/api-zod";
-import { signToken, requireAuth } from "../lib/auth";
+import { User } from "../db/index.js";
+import { RegisterBody, LoginBody, UpdateProfileBody } from "../api-zod.js";
+import { signAccessToken, signRefreshToken, verifyRefreshToken, requireAuth } from "../lib/auth.js";
+import { logger } from "../lib/logger.js";
+
 const router = Router();
-router.post("/auth/register", async (req, res) => {
-  const parsed = RegisterBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
+
+router.post("/register", async (req, res) => {
+  try {
+    const parsed = RegisterBody.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
+
+    const { name, email, password } = parsed.data;
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(409).json({ error: "Email already in use" });
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = await User.create({ name, email, password: hashedPassword });
+
+    const accessToken = signAccessToken({ userId: user.id, email: user.email });
+    const refreshToken = signRefreshToken({ userId: user.id });
+
+    res.status(201).json({ accessToken, refreshToken, user: { id: user.id, name: user.name, email: user.email } });
+  } catch (err) {
+    logger.error(err, "Registration error");
+    res.status(500).json({ error: "Internal server error" });
   }
-  const { name, email, password } = parsed.data;
-  const existing = await db.select().from(usersTable).where(eq(usersTable.email, email));
-  if (existing.length > 0) {
-    res.status(409).json({ error: "Email already in use" });
-    return;
-  }
-  const hashed = await bcrypt.hash(password, 10);
-  const [user] = await db.insert(usersTable).values({ name, email, password: hashed }).returning();
-  const token = signToken({ userId: user.id, email: user.email });
-  res.status(201).json({
-    token,
-    user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() }
-  });
 });
-router.post("/auth/login", async (req, res) => {
-  const parsed = LoginBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
+
+router.post("/login", async (req, res) => {
+  try {
+    const parsed = LoginBody.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
+
+    const { email, password } = parsed.data;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(401).json({ error: "Invalid credentials" });
+
+    const accessToken = signAccessToken({ userId: user.id, email: user.email });
+    const refreshToken = signRefreshToken({ userId: user.id });
+
+    res.json({ accessToken, refreshToken, user: { id: user.id, name: user.name, email: user.email, points: user.points, level: user.level } });
+  } catch (err) {
+    logger.error(err, "Login error");
+    res.status(500).json({ error: "Internal server error" });
   }
-  const { email, password } = parsed.data;
-  const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email));
-  if (!user) {
-    res.status(401).json({ error: "Invalid credentials" });
-    return;
-  }
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) {
-    res.status(401).json({ error: "Invalid credentials" });
-    return;
-  }
-  const token = signToken({ userId: user.id, email: user.email });
-  res.json({
-    token,
-    user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() }
-  });
 });
-router.get("/auth/me", requireAuth, async (req, res) => {
-  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.user.userId));
-  if (!user) {
-    res.status(401).json({ error: "User not found" });
-    return;
+
+router.post("/refresh", async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) return res.status(401).json({ error: "Refresh token required" });
+
+  try {
+    const payload = verifyRefreshToken(refreshToken);
+    const user = await User.findById(payload.userId);
+    if (!user) return res.status(401).json({ error: "User not found" });
+
+    const newAccessToken = signAccessToken({ userId: user.id, email: user.email });
+    res.json({ accessToken: newAccessToken });
+  } catch (err) {
+    res.status(401).json({ error: "Invalid or expired refresh token" });
   }
-  res.json({ id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() });
 });
-router.patch("/auth/profile", requireAuth, async (req, res) => {
-  const { name, email, currentPassword, newPassword } = req.body;
-  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.user.userId));
-  if (!user) {
-    res.status(401).json({ error: "User not found" });
-    return;
+
+router.get("/me", requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    res.json({ id: user.id, name: user.name, email: user.email, points: user.points, level: user.level, streak: user.streak });
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
   }
-  const updates = {};
-  if (name && typeof name === "string" && name.trim()) {
-    updates.name = name.trim();
-  }
-  if (email && typeof email === "string" && email.trim() && email !== user.email) {
-    const existing = await db.select().from(usersTable).where(eq(usersTable.email, email.trim()));
-    if (existing.length > 0 && existing[0].id !== user.id) {
-      res.status(409).json({ error: "Email already in use by another account" });
-      return;
-    }
-    updates.email = email.trim();
-  }
-  if (newPassword) {
-    if (!currentPassword) {
-      res.status(400).json({ error: "Current password is required to set a new password" });
-      return;
-    }
-    const valid = await bcrypt.compare(currentPassword, user.password);
-    if (!valid) {
-      res.status(400).json({ error: "Current password is incorrect" });
-      return;
-    }
-    if (newPassword.length < 6) {
-      res.status(400).json({ error: "New password must be at least 6 characters" });
-      return;
-    }
-    updates.password = await bcrypt.hash(newPassword, 10);
-  }
-  if (Object.keys(updates).length === 0) {
-    res.status(400).json({ error: "No changes to save" });
-    return;
-  }
-  updates.updatedAt = /* @__PURE__ */ new Date();
-  const [updated] = await db.update(usersTable).set(updates).where(eq(usersTable.id, req.user.userId)).returning();
-  res.json({ id: updated.id, name: updated.name, email: updated.email, createdAt: updated.createdAt.toISOString() });
 });
-var stdin_default = router;
-export {
-  stdin_default as default
-};
+
+router.patch("/profile", requireAuth, async (req, res) => {
+  try {
+    const parsed = UpdateProfileBody.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
+
+    const updates = {};
+    if (parsed.data.name) updates.name = parsed.data.name;
+    if (parsed.data.email) updates.email = parsed.data.email;
+    if (parsed.data.avatarUrl) updates.avatarUrl = parsed.data.avatarUrl;
+    
+    if (parsed.data.newPassword) {
+      const user = await User.findById(req.user.userId);
+      const valid = await bcrypt.compare(parsed.data.currentPassword, user.password);
+      if (!valid) return res.status(400).json({ error: "Current password incorrect" });
+      updates.password = await bcrypt.hash(parsed.data.newPassword, 12);
+    }
+
+    const updated = await User.findByIdAndUpdate(req.user.userId, updates, { new: true });
+    res.json({ id: updated.id, name: updated.name, email: updated.email });
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+export default router;

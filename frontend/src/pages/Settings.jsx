@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { customFetch } from '@/api-client-react/custom-fetch';
 import { IconCheck } from '../components/Icons.jsx';
 
 function Section({ title, children }) {
@@ -64,26 +65,16 @@ export default function Settings() {
     setProfileStatus('saving');
     setProfileError('');
     try {
-      const res = await fetch('/api/auth/profile', {
+      const data = await customFetch('/api/auth/profile', {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({ name: profile.name, email: profile.email }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setProfileError(data.error || 'Failed to save profile');
-        setProfileStatus('error');
-        return;
-      }
       // Update auth context with new user data
-      login({ token, user: data });
+      setUser(data);
       setProfileStatus('saved');
       setTimeout(() => setProfileStatus(null), 3000);
-    } catch {
-      setProfileError('Network error. Please try again.');
+    } catch (err) {
+      setProfileError(err.message || 'Failed to save profile');
       setProfileStatus('error');
     }
   };
@@ -101,25 +92,15 @@ export default function Settings() {
     }
     setPasswordStatus('saving');
     try {
-      const res = await fetch('/api/auth/profile', {
+      await customFetch('/api/auth/profile', {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({ currentPassword: passwords.current, newPassword: passwords.new }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setPasswordError(data.error || 'Failed to update password');
-        setPasswordStatus('error');
-        return;
-      }
       setPasswords({ current: '', new: '', confirm: '' });
       setPasswordStatus('saved');
       setTimeout(() => setPasswordStatus(null), 3000);
-    } catch {
-      setPasswordError('Network error. Please try again.');
+    } catch (err) {
+      setPasswordError(err.message || 'Failed to update password');
       setPasswordStatus('error');
     }
   };
@@ -350,7 +331,8 @@ export default function Settings() {
           <p className="text-[13px] text-muted-foreground mb-4">Sign out of your account on this device.</p>
           <button
             onClick={() => {
-              localStorage.removeItem('sanctuary_token');
+              localStorage.removeItem('sanctuary_access_token');
+              localStorage.removeItem('sanctuary_refresh_token');
               window.location.href = '/login';
             }}
             className="px-5 py-2.5 rounded-xl border text-[13px] font-bold text-red-600 hover:bg-red-50 transition-colors"

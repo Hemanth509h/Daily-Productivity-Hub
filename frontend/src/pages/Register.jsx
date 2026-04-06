@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'wouter';
-import { useRegister } from '@workspace/api-client-react';
+import { Link, useLocation } from 'wouter';
+import { useRegister } from '@/api-client-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import { SanctuaryLogo, IconCheck } from '../components/Icons.jsx';
+import { MemorizeLogo, IconCheck } from '../components/Icons.jsx';
+import { useToast } from '@/hooks/use-toast';
 
 const features = [
-  'Unlimited tasks & projects',
-  'Smart deadline tracking',
-  'Focus timer & analytics',
+  'Unlimited memory tasks & projects',
+  'Smart memory tracking',
+  'Focus timer & memory analytics',
   'PWA — works offline too',
 ];
 
@@ -16,12 +17,18 @@ export default function Register() {
   const registerMutation = useRegister();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
     registerMutation.mutate({ data: form }, {
-      onSuccess: (data) => login(data),
+      onSuccess: (data) => {
+        login(data);
+        toast({ title: 'Account created!', description: 'Welcome to The Sanctuary.' });
+        navigate('/');
+      },
       onError: (err) => setError(err?.data?.error || 'Registration failed. Please try again.'),
     });
   };
@@ -38,10 +45,10 @@ export default function Register() {
 
         <div className="relative z-10 flex flex-col h-full p-10">
           <div className="flex items-center gap-3">
-            <SanctuaryLogo size={40} />
+            <MemorizeLogo size={40} />
             <div>
-              <div className="text-white font-bold text-base tracking-tight">The Sanctuary</div>
-              <div className="text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">Daily Focus</div>
+              <div className="text-white font-bold text-base tracking-tight">Memorize</div>
+              <div className="text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">Memory Hub</div>
             </div>
           </div>
 
@@ -52,10 +59,10 @@ export default function Register() {
               <span className="text-white/70 text-xs font-medium">Free to join</span>
             </div>
             <h1 className="text-[2.4rem] font-bold text-white leading-[1.15] mb-4 tracking-tight">
-              Start your <span style={{ background: 'linear-gradient(90deg, #4ADE80, #22D3EE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>focus</span><br /> journey today.
+              Start your <span style={{ background: 'linear-gradient(90deg, #4ADE80, #22D3EE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>memory</span><br /> journey today.
             </h1>
             <p className="text-white/50 text-sm leading-relaxed mb-8">
-              Join Sanctuary and take control of your time, tasks, and productivity.
+              Join Memorize and take control of your memory, tasks, and knowledge.
             </p>
             <div className="space-y-3">
               {features.map((f) => (
@@ -83,7 +90,7 @@ export default function Register() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
           <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <SanctuaryLogo size={32} />
+            <MemorizeLogo size={32} />
             <span className="font-bold text-foreground">The Sanctuary</span>
           </div>
 

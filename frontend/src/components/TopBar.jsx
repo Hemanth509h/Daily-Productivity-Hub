@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { Link } from 'wouter';
 import { IconSearch, IconBell, IconPlus } from './Icons.jsx';
 import QuickAddModal from './QuickAddModal.jsx';
 
@@ -11,30 +12,29 @@ export default function TopBar() {
 
   return (
     <>
-      <header className="h-14 flex items-center px-5 gap-3 bg-white border-b flex-shrink-0" style={{ borderColor: 'hsl(213,25%,88%)' }}>
+      <header className="h-16 flex items-center px-8 gap-6 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 flex-shrink-0 sticky top-0 z-30">
         {/* Search */}
-        <div className="flex-1 max-w-sm relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none">
-            <IconSearch size={15} />
+        <div className="flex-1 max-w-xl relative group">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors pointer-events-none">
+            <IconSearch size={16} strokeWidth={2.5} />
           </span>
           <input
             type="search"
-            placeholder="Search tasks..."
+            placeholder="Search tasks, events, or files..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border-0 outline-none focus:ring-2 focus:ring-ring/30 placeholder:text-muted-foreground/40 font-medium"
-            style={{ background: 'hsl(213,33%,95%)', color: 'hsl(222,47%,15%)' }}
+            className="w-full pl-11 pr-4 py-2.5 text-[13.5px] rounded-xl border-none outline-none focus:ring-4 focus:ring-primary/5 placeholder:text-slate-400 font-medium transition-all"
+            style={{ background: 'rgba(241, 245, 249, 0.7)' }}
           />
         </div>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-4 ml-auto">
           {/* Quick Add */}
           <button
             onClick={() => setShowQuickAdd(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-semibold text-white transition-all hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
-            style={{ background: 'linear-gradient(135deg, hsl(222,47%,22%) 0%, hsl(222,47%,28%) 100%)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black text-white transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-95 bg-primary uppercase tracking-widest"
           >
-            <IconPlus size={14} />
+            <IconPlus size={14} strokeWidth={3} />
             Quick Add
           </button>
 
@@ -43,41 +43,48 @@ export default function TopBar() {
             onClick={() => {
               if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
             }}
-            className="relative w-9 h-9 flex items-center justify-center rounded-xl hover:bg-muted transition-colors text-foreground/55 hover:text-foreground/80"
+            className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100/50 text-slate-400 hover:text-slate-900 transition-all hover:bg-slate-100"
           >
-            <IconBell size={17} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+            <IconBell size={18} strokeWidth={2} />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white" />
           </button>
+
+          <div className="h-6 w-px bg-slate-200 mx-1" />
 
           {/* User */}
           <div className="relative">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2.5 hover:bg-muted/80 px-2.5 py-1.5 rounded-xl transition-colors"
+              className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-2xl transition-all hover:bg-slate-100/50"
             >
-              <div className="text-right">
-                <div className="text-[12.5px] font-semibold text-foreground leading-tight">{user?.name || 'User'}</div>
-                <div className="text-[10px] text-muted-foreground/60">Pro Member</div>
+              <div className="text-right hidden sm:block">
+                <div className="text-[12px] font-bold text-slate-900 leading-tight">{user?.name || 'Explorer'}</div>
+                <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Focus Mode: ON</div>
               </div>
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)' }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[13px] font-black shadow-md"
+                style={{ background: 'linear-gradient(135deg, hsl(222,47%,20%), hsl(222,47%,30%))' }}>
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
             </button>
             {showUserMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-xl border border-border z-50 min-w-[150px] py-1 overflow-hidden">
-                  <a href="/settings" className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>
-                    Profile
-                  </a>
-                  <div className="h-px bg-border my-1" />
+                <div className="absolute right-0 top-full mt-2 bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 z-50 min-w-[220px] p-2 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                  <div className="px-4 py-3 mb-1">
+                    <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Sanctuary Account</div>
+                    <div className="text-[13px] font-bold text-slate-900 truncate">{user?.email}</div>
+                  </div>
+                  <div className="h-px bg-slate-50 mx-2 mb-1" />
+                  <Link href="/settings" onClick={() => setShowUserMenu(false)}>
+                    <div className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-all cursor-pointer">
+                      Profile Settings
+                    </div>
+                  </Link>
                   <button
-                    onClick={() => { setShowUserMenu(false); window.location.href = '/login'; localStorage.removeItem('sanctuary_token'); }}
-                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                    onClick={() => { setShowUserMenu(false); logout(); }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-bold text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
                   >
-                    Sign out
+                    Terminate Session
                   </button>
                 </div>
               </>

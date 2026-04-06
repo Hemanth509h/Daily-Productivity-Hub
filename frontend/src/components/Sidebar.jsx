@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'wouter';
-import { useGetDashboardSummary } from '@workspace/api-client-react';
+import { useGetDashboardSummary } from '@/api-client-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import {
   IconDashboard, IconTasks, IconCalendar, IconSettings,
-  IconClock, IconUpcoming, IconAlert, IconSmartphone, SanctuaryLogo
+  IconClock, IconUpcoming, IconAlert, IconSmartphone, MemorizeLogo,
+  IconHabit, IconAward, IconLogOut
 } from './Icons.jsx';
+import { cn } from '../lib/utils.js';
 
-const NavItem = ({ href, icon: Icon, label, badge, active, danger }) => (
+const NavItem = ({ href, icon: Icon, label, badge, active }) => (
   <Link href={href}>
-    <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all mx-2 group ${
-      active
-        ? 'text-white font-semibold shadow-sm'
-        : 'text-white/55 hover:text-white/90 hover:bg-white/6'
-    }`}
-      style={active ? { background: 'rgba(255,255,255,0.13)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' } : {}}>
-      <div className={`flex-shrink-0 ${active ? 'text-white' : 'text-white/50 group-hover:text-white/75'}`}>
-        <Icon size={17} />
+    <div className={cn(
+      "flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all mx-2 group mb-1",
+      active 
+        ? "bg-white text-primary font-bold shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)]" 
+        : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/50"
+    )}>
+      <div className={cn("flex-shrink-0 transition-colors", active ? "text-primary" : "group-hover:text-slate-600")}>
+        <Icon size={18} strokeWidth={active ? 2.5 : 2} />
       </div>
-      <span className="text-[13px] flex-1">{label}</span>
-      {badge != null && badge > 0 && (
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-none ${
-          label === 'Overdue' ? 'bg-red-500/90 text-white' : 'bg-white/15 text-white'
-        }`}>
+      <span className="text-[13.5px] flex-1">{label}</span>
+      {badge > 0 && (
+        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200/50">
           {badge}
         </span>
       )}
@@ -34,80 +34,73 @@ export default function Sidebar() {
   const [location] = useLocation();
   const { user, logout } = useAuth();
   const { data: summary } = useGetDashboardSummary();
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstall, setShowInstall] = useState(true);
-
-  React.useEffect(() => {
-    const handler = (e) => { e.preventDefault(); setDeferredPrompt(e); };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  const handleInstall = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      setDeferredPrompt(null);
-      setShowInstall(false);
-    }
-  };
 
   return (
-    <aside className="w-[210px] flex-shrink-0 flex flex-col h-full relative overflow-hidden" style={{ background: 'hsl(222, 47%, 17%)' }}>
-      {/* Subtle top gradient shimmer */}
-      <div className="absolute top-0 left-0 right-0 h-32 pointer-events-none" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 100%)' }} />
-
-      {/* Logo */}
-      <div className="px-4 py-5 flex-shrink-0">
+    <aside className="w-[240px] flex-shrink-0 flex flex-col h-full relative overflow-hidden bg-sidebar/50 border-r border-sidebar-border">
+      {/* Brand Header */}
+      <div className="px-6 py-8 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <SanctuaryLogo size={36} />
+          <div className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
+            <MemorizeLogo size={24} />
+          </div>
           <div>
-            <div className="text-white font-bold text-[14px] leading-tight tracking-tight">The Sanctuary</div>
-            <div className="text-white/40 text-[9.5px] font-semibold tracking-[0.2em] uppercase mt-0.5">Daily Focus</div>
+            <div className="text-slate-900 font-bold text-sm tracking-tight leading-none mb-1">The Sanctuary</div>
+            <div className="text-slate-400 font-black text-[9px] tracking-[0.2em] uppercase">Daily Focus</div>
           </div>
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="mx-4 h-px mb-3" style={{ background: 'rgba(255,255,255,0.06)' }} />
-
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto sidebar-scroll space-y-0.5">
-        <div className="px-5 pb-2 pt-1">
-          <span className="text-white/25 text-[9.5px] font-bold tracking-[0.18em] uppercase">Menu</span>
+      {/* Main Nav */}
+      <nav className="flex-1 overflow-y-auto sidebar-scroll py-2 px-1">
+        <div className="px-6 pb-3 pt-2">
+          <span className="text-slate-300 text-[10px] font-black tracking-[0.15em] uppercase">Menu</span>
         </div>
         <NavItem href="/" icon={IconDashboard} label="Dashboard" active={location === '/'} />
         <NavItem href="/tasks" icon={IconTasks} label="Tasks" active={location === '/tasks' || location.startsWith('/tasks/')} />
         <NavItem href="/calendar" icon={IconCalendar} label="Calendar" active={location === '/calendar'} />
         <NavItem href="/settings" icon={IconSettings} label="Settings" active={location === '/settings'} />
 
-        {/* View section */}
-        <div className="px-5 pt-5 pb-2">
-          <span className="text-white/25 text-[9.5px] font-bold tracking-[0.18em] uppercase">View</span>
+        <div className="px-6 pb-3 pt-8">
+          <span className="text-slate-300 text-[10px] font-black tracking-[0.15em] uppercase">Views</span>
         </div>
-        <NavItem href="/" icon={IconClock} label="Today" badge={summary?.todayCount} active={false} />
-        <NavItem href="/tasks?view=upcoming" icon={IconUpcoming} label="Upcoming" active={false} />
+        <NavItem href="/tasks?status=today" icon={IconClock} label="Today" badge={summary?.todayCount} active={false} />
+        <NavItem href="/tasks?status=upcoming" icon={IconUpcoming} label="Upcoming" active={false} />
         <NavItem href="/tasks?status=overdue" icon={IconAlert} label="Overdue" badge={summary?.overdueCount} active={false} />
       </nav>
 
-      {/* User info at bottom */}
-      <div className="flex-shrink-0 px-3 pb-2 pt-2 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-        <div className="flex items-center gap-2.5 px-2 py-2 rounded-xl hover:bg-white/6 cursor-pointer transition-colors">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)' }}>
-            {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+      {/* PWA Install Promo */}
+      <div className="px-4 mb-4">
+        <div className="p-5 rounded-2xl bg-slate-900 text-white relative overflow-hidden group">
+          <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-white/5 group-hover:scale-150 transition-transform duration-700" />
+          <div className="relative z-10">
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mb-3">
+              <IconSmartphone size={16} className="text-white/80" />
+            </div>
+            <div className="text-xs font-bold mb-1">Native App</div>
+            <div className="text-[10px] text-white/50 leading-relaxed mb-3">Install Sanctuary for a seamless desktop experience.</div>
+            <button className="w-full py-2 bg-white text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-slate-200 transition-colors">
+              Install App
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* User Footer */}
+      <div className="p-4 border-t border-sidebar-border bg-slate-50/50">
+        <div className="flex items-center gap-3 p-2 rounded-2xl hover:bg-white hover:shadow-sm transition-all group">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white shadow-md border border-white/20"
+            style={{ background: 'linear-gradient(135deg, hsl(222,47%,20%), hsl(222,47% ,30%))' }}>
+            {user?.name?.[0].toUpperCase() || 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-white text-[12px] font-semibold truncate">{user?.name || 'User'}</div>
-            <div className="flex items-center gap-1 mt-0.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-              <span className="text-white/35 text-[10px]">Active</span>
-            </div>
+            <div className="text-slate-900 text-[12.5px] font-bold truncate leading-none mb-1">{user?.name || 'Explorer'}</div>
+            <div className="text-[10px] font-medium text-slate-400 truncate">Pro Member</div>
           </div>
-          <button onClick={logout} className="text-white/25 hover:text-white/70 transition-colors p-1 rounded">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
-            </svg>
+          <button 
+            onClick={logout}
+            className="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+          >
+            <IconLogOut size={16} />
           </button>
         </div>
       </div>

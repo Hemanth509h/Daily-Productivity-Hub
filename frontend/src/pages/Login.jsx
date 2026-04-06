@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'wouter';
-import { useLogin } from '@workspace/api-client-react';
+import { Link, useLocation } from 'wouter';
+import { useLogin } from '@/api-client-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import { SanctuaryLogo, IconCheck } from '../components/Icons.jsx';
+import { MemorizeLogo, IconCheck } from '../components/Icons.jsx';
+import { useToast } from '@/hooks/use-toast';
 
 const features = [
-  'Track deadlines with smart reminders',
-  'Visualize your productivity analytics',
-  'Focus timer with Pomodoro sessions',
+  'Track memory tasks with smart reminders',
+  'Visualize your memory progress analytics',
+  'Focus timer for memorization sessions',
   'Install as a native app on any device',
 ];
 
@@ -16,12 +17,18 @@ export default function Login() {
   const loginMutation = useLogin();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
     loginMutation.mutate({ data: form }, {
-      onSuccess: (data) => login(data),
+      onSuccess: (data) => {
+        login(data);
+        toast({ title: 'Welcome back!', description: 'You have signed in successfully.' });
+        navigate('/');
+      },
       onError: (err) => setError(err?.data?.error || 'Invalid credentials. Please try again.'),
     });
   };
@@ -47,10 +54,10 @@ export default function Login() {
         <div className="relative z-10 flex flex-col h-full p-10">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <SanctuaryLogo size={40} />
+            <MemorizeLogo size={40} />
             <div>
-              <div className="text-white font-bold text-base tracking-tight">The Sanctuary</div>
-              <div className="text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">Daily Focus</div>
+              <div className="text-white font-bold text-base tracking-tight">Memorize</div>
+              <div className="text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">Memory Hub</div>
             </div>
           </div>
 
@@ -63,12 +70,12 @@ export default function Login() {
             <h1 className="text-[2.4rem] font-bold text-white leading-[1.15] mb-4 tracking-tight">
               Your personal<br />
               <span style={{ background: 'linear-gradient(90deg, #4ADE80, #22D3EE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                productivity
+                memory
               </span><br />
-              sanctuary.
+              companion.
             </h1>
             <p className="text-white/50 text-sm leading-relaxed mb-8">
-              Stay organized, beat deadlines, and build the habits that lead to real results.
+              Enhance your memory, stay organized, and build habits that lead to lasting knowledge.
             </p>
 
             {/* Features */}
@@ -101,7 +108,7 @@ export default function Login() {
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <SanctuaryLogo size={32} />
+            <MemorizeLogo size={32} />
             <span className="font-bold text-foreground">The Sanctuary</span>
           </div>
 

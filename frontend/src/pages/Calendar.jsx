@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'wouter';
-import { useGetTasks } from '@workspace/api-client-react';
+import { useGetTasks } from '@/api-client-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, getDay, addMonths, subMonths } from 'date-fns';
 import { categoryBadgeClass } from '../lib/utils.js';
 import FocusTimer from '../components/FocusTimer.jsx';
