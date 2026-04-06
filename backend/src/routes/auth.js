@@ -95,7 +95,7 @@ router.patch("/profile", requireAuth, async (req, res) => {
       updates.password = await bcrypt.hash(parsed.data.newPassword, 12);
     }
 
-    const updated = await User.findByIdAndUpdate(req.user.userId, updates, { new: true });
+    const updated = await User.findByIdAndUpdate(req.user.userId, updates, { returnDocument: 'after' });
     res.json({ id: updated.id, name: updated.name, email: updated.email });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });

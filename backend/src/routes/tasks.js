@@ -69,7 +69,7 @@ router.patch("/:id", requireAuth, async (req, res) => {
     const updated = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.userId },
       { $set: updates },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updated) return res.status(404).json({ error: "Task not found" });
@@ -98,7 +98,7 @@ router.post("/:id/subtasks", requireAuth, async (req, res) => {
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.userId },
       { $push: { subtasks: { title: parsed.data.title } } },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!task) return res.status(404).json({ error: "Task not found" });
@@ -117,7 +117,7 @@ router.patch("/:id/subtasks/:subtaskId", requireAuth, async (req, res) => {
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.userId, "subtasks._id": req.params.subtaskId },
       { $set: { "subtasks.$.completed": parsed.data.completed } },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!task) return res.status(404).json({ error: "Task or subtask not found" });

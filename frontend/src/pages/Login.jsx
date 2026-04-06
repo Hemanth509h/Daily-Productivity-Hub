@@ -165,9 +165,14 @@ export default function Login() {
             </form>
 
             {/* Demo hint */}
-            <div className="mt-4 p-3 rounded-xl text-center" style={{ background: 'hsl(213,33%,96%)', border: '1px dashed hsl(213,25%,85%)' }}>
-              <div className="text-[11px] text-muted-foreground font-medium">Demo: <span className="font-bold text-foreground">demo@sanctuary.app</span> / <span className="font-bold text-foreground">demo1234</span></div>
-            </div>
+            <button
+              type="button"
+              onClick={() => setForm({ email: 'demo@sanctuary.app', password: 'demo1234' })}
+              className="mt-4 w-full p-3 rounded-xl text-center transition-all hover:opacity-80 active:scale-[0.99] cursor-pointer"
+              style={{ background: 'hsl(213,33%,96%)', border: '1px dashed hsl(213,25%,85%)' }}
+            >
+              <div className="text-[11px] text-muted-foreground font-medium">Click to use demo: <span className="font-bold text-foreground">demo@sanctuary.app</span> / <span className="font-bold text-foreground">demo1234</span></div>
+            </button>
 
             <p className="text-center text-[13px] text-muted-foreground mt-5">
               Don't have an account?{' '}
