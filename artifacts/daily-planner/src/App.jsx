@@ -1,65 +1,19 @@
-import React from 'react';
-import { Switch, Route, Router as WouterRouter, Redirect } from 'wouter';
-import { AuthProvider, useAuth } from './contexts/AuthContext.jsx';
-import Layout from './components/Layout.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import Tasks from './pages/Tasks.jsx';
-import TaskDetail from './pages/TaskDetail.jsx';
-import Calendar from './pages/Calendar.jsx';
-import Settings from './pages/Settings.jsx';
-import Login from './pages/Login.jsx';
-import Register from './pages/Register.jsx';
-
-function ProtectedRoute({ component: Component }) {
-  const { user, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-muted-foreground">Loading Sanctuary...</p>
-        </div>
-      </div>
-    );
-  }
-  if (!user) return <Redirect to="/login" />;
-  return (
-    <Layout>
-      <Component />
-    </Layout>
-  );
+import { Switch, Route, Router as WouterRouter } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import NotFound from "@/pages/not-found";
+const queryClient = new QueryClient();
+function Home() {
+  return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen w-full flex items-center justify-center bg-gray-50" }, /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold text-gray-900" }, "Replit Agent is building..."), /* @__PURE__ */ React.createElement("p", { className: "mt-2 text-sm text-gray-600" }, "Your app will appear here once it's ready.")));
 }
-
-function PublicRoute({ component: Component }) {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  if (user) return <Redirect to="/" />;
-  return <Component />;
-}
-
 function Router() {
-  return (
-    <Switch>
-      <Route path="/login" component={() => <PublicRoute component={Login} />} />
-      <Route path="/register" component={() => <PublicRoute component={Register} />} />
-      <Route path="/" component={() => <ProtectedRoute component={Dashboard} />} />
-      <Route path="/tasks" component={() => <ProtectedRoute component={Tasks} />} />
-      <Route path="/tasks/:id" component={() => <ProtectedRoute component={TaskDetail} />} />
-      <Route path="/calendar" component={() => <ProtectedRoute component={Calendar} />} />
-      <Route path="/settings" component={() => <ProtectedRoute component={Settings} />} />
-      <Route>
-        <Redirect to="/" />
-      </Route>
-    </Switch>
-  );
+  return /* @__PURE__ */ React.createElement(Switch, null, /* @__PURE__ */ React.createElement(Route, { path: "/", component: Home }), /* @__PURE__ */ React.createElement(Route, { component: NotFound }));
 }
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-        <Router />
-      </WouterRouter>
-    </AuthProvider>
-  );
+function App() {
+  return /* @__PURE__ */ React.createElement(QueryClientProvider, { client: queryClient }, /* @__PURE__ */ React.createElement(TooltipProvider, null, /* @__PURE__ */ React.createElement(WouterRouter, { base: import.meta.env.BASE_URL.replace(/\/$/, "") }, /* @__PURE__ */ React.createElement(Router, null)), /* @__PURE__ */ React.createElement(Toaster, null)));
 }
+var stdin_default = App;
+export {
+  stdin_default as default
+};

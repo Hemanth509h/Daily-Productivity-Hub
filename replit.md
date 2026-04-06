@@ -36,7 +36,7 @@ A full-stack productivity and daily planning web application. Dark navy sidebar 
 
 ## Frontend (daily-planner) – Plain JS
 
-All component files use `.jsx` extension. `tsconfig.json` has `allowJs: true`, `checkJs: false`.
+All component files use `.jsx` extension. All source files are plain JavaScript — no TypeScript files anywhere in the project.
 Entry point: `src/main.jsx` (referenced in `index.html`).
 
 ### Pages
@@ -106,6 +106,6 @@ Password: `demo1234`
 
 ## User Preferences
 
-- Frontend in plain JavaScript (.jsx/.js) — no TypeScript type annotations in component files
+- Entire project in plain JavaScript (.jsx/.js) — zero TypeScript files anywhere
 - Design matches "The Sanctuary" reference images: dark navy sidebar, white cards, priority badges, completion ring
 - No emojis as primary UI elements
