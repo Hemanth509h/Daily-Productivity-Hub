@@ -35,7 +35,7 @@ export default function Dashboard() {
           {greeting}, <span className="text-primary">{user?.name?.split(' ')[0] || 'Alex'}.</span>
         </h1>
         <p className="text-slate-400 text-base font-medium max-w-xl leading-relaxed">
-          You have {todayTasks?.length || 12} tasks to focus on today. Start with the urgent ones.
+          You have {todayTasks?.length ?? 0} tasks to focus on today. Start with the urgent ones.
         </p>
       </header>
 
