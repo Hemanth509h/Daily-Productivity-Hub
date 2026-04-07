@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar.jsx';
 import TopBar from './TopBar.jsx';
-import AIAssistant from './AIAssistant.jsx';
 import BottomNav from './BottomNav.jsx';
 
 export default function Layout({ children }) {
@@ -26,7 +25,6 @@ export default function Layout({ children }) {
         </main>
       </div>
 
-      <AIAssistant />
       <BottomNav />
     </div>
   );
