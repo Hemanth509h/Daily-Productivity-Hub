@@ -9,7 +9,7 @@ import {
   getGetTasksQueryKey,
   getGetDashboardSummaryQueryKey,
 } from '@/api-client-react';
-import { cn, formatDeadline, priorityBadgeClass } from '../lib/utils.js';
+import { cn, formatDeadline, getTimeLeft } from '../lib/utils.js';
 import { IconCheck, IconEdit, IconTrash, IconLayout, IconList, IconPlus, IconSearch, IconFilter } from '../components/Icons.jsx';
 import QuickAddModal from '../components/QuickAddModal.jsx';
 import KanbanBoard from '../components/KanbanBoard.jsx';
@@ -125,10 +125,10 @@ export default function Tasks() {
 
         {/* Stats Row */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <StatBadge label="Total Active" value={summary?.activeCount || 12} increase="+2 today" />
-          <StatBadge label="In Progress" value={summary?.inProgressCount || "05"} />
-          <StatBadge label="Completed" value={summary?.completedToday || 24} />
-          <StatBadge label="Overdue" value={summary?.overdueCount || "03"} variant="rose" />
+          <StatBadge label="Total Active" value={summary?.totalActive ?? 0} />
+          <StatBadge label="In Progress" value={summary?.inProgress ?? 0} />
+          <StatBadge label="Completed" value={summary?.completedToday ?? 0} />
+          <StatBadge label="Overdue" value={summary?.overdueCount ?? 0} variant="rose" />
         </section>
 
         {/* Task List Header */}
@@ -236,24 +236,28 @@ const TaskCard = ({ task, onDelete, onToggle, onClick }) => (
         {task.title}
       </h4>
       <div className="flex items-center gap-3 mt-1.5">
-        <span className="text-[11px] font-bold text-slate-400">{task.category || 'Work'} • {task.subCategory || 'Internal'}</span>
+        {task.category && <span className="text-[11px] font-bold text-slate-400 capitalize">{task.category}</span>}
       </div>
     </div>
 
     <div className="w-24 flex justify-center">
-       <span className={cn(
-         "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
-         task.priority === 'high' ? "bg-rose-50 text-rose-500" : "bg-slate-100 text-slate-500"
-       )}>
-         {task.priority || 'MEDIUM'}
-       </span>
+       {task.priority ? (
+         <span className={cn(
+           "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
+           task.priority === 'high' ? "bg-rose-50 text-rose-500" : task.priority === 'medium' ? "bg-amber-50 text-amber-500" : "bg-slate-100 text-slate-400"
+         )}>
+           {task.priority}
+         </span>
+       ) : <span className="text-[11px] text-slate-300">—</span>}
     </div>
 
     <div className="w-32 text-center">
-       <div className={cn("text-[11px] font-bold", task.completed ? "text-slate-300" : "text-rose-500")}>
-         {task.completed ? 'Completed' : formatDeadline(task.deadlineDate) || 'Today, 6:00 PM'}
+       <div className={cn("text-[11px] font-bold", task.completed ? "text-slate-300" : task.deadlineDate ? "text-rose-500" : "text-slate-300")}>
+         {task.completed ? 'Completed' : task.deadlineDate ? formatDeadline(task.deadlineDate) : '—'}
        </div>
-       {!task.completed && <div className="text-[9px] font-black uppercase tracking-[0.05em] text-rose-300 mt-0.5">3 Hours Left</div>}
+       {!task.completed && task.deadlineDate && (
+         <div className="text-[9px] font-black uppercase tracking-[0.05em] text-rose-300 mt-0.5">{getTimeLeft(task.deadlineDate)}</div>
+       )}
     </div>
 
     <div className="w-24 flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

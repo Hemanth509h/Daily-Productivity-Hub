@@ -36,7 +36,18 @@ function statusBadgeClass(status) {
 }
 
 function formatDeadline(deadline) {
+  if (!deadline) return null;
   return format(new Date(deadline), 'MMM dd, yyyy');
+}
+
+function getTimeLeft(deadline) {
+  if (!deadline) return null;
+  const diff = new Date(deadline) - new Date();
+  if (diff < 0) return 'Overdue';
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  if (hours < 24) return `${hours}h left`;
+  const days = Math.floor(hours / 24);
+  return `${days}d left`;
 }
 
 function priorityBadgeClass(priority) {
@@ -54,6 +65,7 @@ export {
   getGreeting,
   categoryBadgeClass,
   formatDeadline,
+  getTimeLeft,
   statusBadgeClass,
   priorityBadgeClass
 };
