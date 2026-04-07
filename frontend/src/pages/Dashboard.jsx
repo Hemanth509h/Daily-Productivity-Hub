@@ -27,7 +27,7 @@ export default function Dashboard() {
   const overdueCount = summary?.overdueCount ?? 0;
 
   return (
-    <div className="flex flex-col h-full space-y-12 pb-12">
+    <div className="flex flex-col h-full space-y-8 md:space-y-12 pb-12">
       {/* Header Section */}
       <header className="px-2">
         <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-2 md:mb-3">
@@ -38,7 +38,7 @@ export default function Dashboard() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
         {/* Left Col: Today's Tasks */}
         <div className="lg:col-span-8 space-y-6">
           <div className="flex items-center justify-between mb-4">
@@ -56,7 +56,7 @@ export default function Dashboard() {
                 <div 
                   key={task.id}
                   onClick={() => navigate(`/tasks/${task.id}`)}
-                  className="bg-white p-6 rounded-[2rem] border border-slate-100 flex items-center gap-6 hover:shadow-xl hover:shadow-slate-200/50 transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-4"
+                  className="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-slate-100 flex items-center gap-4 md:gap-6 hover:shadow-xl hover:shadow-slate-200/50 transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-4"
                 >
                   <div className="w-12 h-12 rounded-full border-2 border-slate-100 flex items-center justify-center text-slate-300 group-hover:border-primary group-hover:text-primary transition-all">
                     {task.completed ? <IconCheck size={24} strokeWidth={3} /> : <div className="w-4 h-4 rounded-full bg-slate-50 border border-slate-100" />}
@@ -99,7 +99,7 @@ export default function Dashboard() {
         {/* Right Col: Urgent & Stats */}
         <div className="lg:col-span-4 space-y-10">
           {/* Urgent Tasks Sidebar */}
-          <div className="bg-slate-50/50 rounded-[2.5rem] p-8 border border-slate-200/50">
+          <div className="bg-slate-50/50 rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 border border-slate-200/50">
             <div className="flex items-center gap-2 mb-8">
               <div className="w-1.5 h-6 bg-rose-500 rounded-full" />
               <h3 className="text-lg font-black text-slate-900 tracking-tight">Urgent Tasks</h3>
@@ -133,7 +133,7 @@ export default function Dashboard() {
           </div>
 
           {/* Weekly Performance Widget */}
-          <div className="bg-[#0f172a] rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-slate-300">
+          <div className="bg-[#0f172a] rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 text-white relative overflow-hidden shadow-2xl shadow-slate-300">
             <div className="relative z-10">
               <div className="mb-8">
                 <span className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Performance</span>
@@ -166,14 +166,14 @@ export default function Dashboard() {
 }
 
 const UrgentItem = ({ title, status, color, onClick }) => (
-  <div onClick={onClick} className="bg-white p-5 rounded-3xl border border-slate-100 flex items-center justify-between group cursor-pointer hover:shadow-lg hover:shadow-slate-200/40 transition-all">
-    <div className="flex items-center gap-4">
-      <div className={cn("w-1.5 h-12 rounded-full", color === 'rose' ? "bg-rose-500" : "bg-amber-400")} />
+  <div onClick={onClick} className="bg-white p-4 rounded-2xl md:rounded-3xl border border-slate-100 flex items-center justify-between group cursor-pointer hover:shadow-lg hover:shadow-slate-200/40 transition-all">
+    <div className="flex items-center gap-3">
+      <div className={cn("w-1 h-10 rounded-full", color === 'rose' ? "bg-rose-500" : "bg-amber-400")} />
       <div>
-        <h4 className="text-sm font-black text-slate-800 mb-1">{title}</h4>
-        <span className={cn("text-[10px] font-black uppercase tracking-widest", color === 'rose' ? "text-rose-500" : "text-amber-500")}>{status}</span>
+        <h4 className="text-xs md:text-sm font-black text-slate-800 mb-0.5">{title}</h4>
+        <span className={cn("text-[9px] font-black uppercase tracking-widest", color === 'rose' ? "text-rose-500" : "text-amber-500")}>{status}</span>
       </div>
     </div>
-    <IconChevronRight size={16} className="text-slate-300 group-hover:text-slate-900 transition-colors" />
+    <IconChevronRight size={14} className="text-slate-300 group-hover:text-slate-900 transition-colors" />
   </div>
 );

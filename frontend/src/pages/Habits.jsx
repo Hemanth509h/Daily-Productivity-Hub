@@ -34,7 +34,7 @@ export default function Habits() {
   if (isLoading) return <div className="p-8">Loading habits...</div>;
 
   return (
-    <div className="flex flex-col h-full max-w-5xl mx-auto space-y-8">
+    <div className="flex flex-col h-full max-w-5xl mx-auto space-y-6 md:space-y-8 pb-20 md:pb-0">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Consistency King</h1>
@@ -123,10 +123,10 @@ const HabitCard = ({ habit, onLog }) => {
   const isCompletedToday = habit.habitLogs?.some(log => new Date(log.date).toDateString() === new Date().toDateString());
 
   return (
-    <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all group">
+    <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all group">
       <div className="flex items-start justify-between mb-6">
-        <div className="p-3 rounded-2xl bg-slate-50 text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all">
-          <Flame size={20} fill={streak > 0 ? "currentColor" : "none"} />
+        <div className="p-2.5 md:p-3 rounded-xl md:rounded-2xl bg-slate-50 text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all">
+          <Flame size={18} fill={streak > 0 ? "currentColor" : "none"} />
         </div>
         <div className="text-right">
           <div className="text-sm font-black text-slate-900">{streak} 🔥</div>
@@ -134,8 +134,8 @@ const HabitCard = ({ habit, onLog }) => {
         </div>
       </div>
 
-      <h3 className="text-lg font-extrabold text-slate-900 mb-1">{habit.name}</h3>
-      <p className="text-xs text-slate-400 font-medium mb-6 uppercase tracking-widest">{habit.frequency} · Target {habit.target}x</p>
+      <h3 className="text-base md:text-lg font-extrabold text-slate-900 mb-0.5 md:mb-1">{habit.name}</h3>
+      <p className="text-[10px] md:text-xs text-slate-400 font-medium mb-4 md:mb-6 uppercase tracking-widest">{habit.frequency} · Target {habit.target}x</p>
 
       {/* Heatmap Preview (Simplified) */}
       <div className="flex gap-1.5 mb-8">

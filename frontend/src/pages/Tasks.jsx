@@ -103,7 +103,7 @@ export default function Tasks() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-10 space-y-4 md:space-y-10">
+      <main className="flex-1 overflow-y-auto p-4 md:p-10 space-y-8 md:space-y-10">
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight mb-2">Daily Tasks</h1>
@@ -249,16 +249,16 @@ const FilterOption = ({ label, active = false }) => (
 
 const StatBadge = ({ label, value, increase, variant = 'default' }) => (
   <div className={cn(
-    "p-8 rounded-[2rem] border min-w-0 transition-all hover:scale-[1.02]",
+    "p-5 md:p-8 rounded-3xl md:rounded-[2rem] border min-w-0 transition-all hover:scale-[1.02]",
     variant === 'rose' ? "bg-rose-50 border-rose-100" : "bg-white border-slate-100 shadow-sm"
   )}>
     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">{label}</span>
-    <div className="flex items-baseline gap-3">
-      <div className={cn("text-4xl font-black", variant === 'rose' ? "text-rose-500" : "text-slate-900")}>
+    <div className="flex items-baseline gap-2 md:gap-3">
+      <div className={cn("text-2xl md:text-4xl font-black", variant === 'rose' ? "text-rose-500" : "text-slate-900")}>
         {value}
       </div>
       {increase && (
-        <span className="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">
+        <span className="bg-emerald-100 text-emerald-700 text-[8px] md:text-[9px] font-black px-1.5 md:px-2 py-0.5 rounded-full uppercase tracking-tighter">
           {increase}
         </span>
       )}
@@ -269,7 +269,7 @@ const StatBadge = ({ label, value, increase, variant = 'default' }) => (
 const TaskCard = ({ task, onDelete, onToggle, onClick }) => (
   <div 
     onClick={onClick}
-    className="bg-white p-4 md:p-6 rounded-[2rem] border border-slate-100 flex flex-col md:flex-row md:items-center gap-4 md:gap-6 hover:shadow-xl hover:shadow-slate-200/40 transition-all cursor-pointer group animate-in slide-in-from-bottom-2"
+    className="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-slate-100 flex flex-col md:flex-row md:items-center gap-4 md:gap-6 hover:shadow-xl hover:shadow-slate-200/40 transition-all cursor-pointer group animate-in slide-in-from-bottom-2"
   >
     <div className="flex items-center gap-4 md:gap-6 flex-1">
       <button 

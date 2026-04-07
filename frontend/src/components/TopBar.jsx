@@ -12,7 +12,7 @@ export default function TopBar({ onMenuClick }) {
 
   return (
     <>
-      <header className="h-14 md:h-16 flex items-center px-4 md:px-8 gap-3 md:gap-6 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 flex-shrink-0 sticky top-0 z-30">
+      <header className="h-14 md:h-16 flex items-center px-3 md:px-8 gap-2 md:gap-6 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 flex-shrink-0 sticky top-0 z-30">
         {/* Hamburger — mobile only */}
 
 

@@ -186,7 +186,33 @@
 }
 
 /* Settings page centering */
-main.flex-1.overflow-y-auto.p-4.md\:p-8.pb-20.md\:pb-8.scrollbar-hide {
+main.flex-1.overflow-y-auto.p-4.md\:p-8.pb-28.md\:pb-8.scrollbar-hide {
   display: flex;
   justify-content: center;
+}
+
+/* Mobile Optimizations */
+@layer utilities {
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
+  }
+
+  .habit-cell {
+    width: 12px;
+    height: 12px;
+  }
 }
