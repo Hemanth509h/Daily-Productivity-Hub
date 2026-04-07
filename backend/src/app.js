@@ -9,7 +9,6 @@ import authRouter from "./routes/auth.js";
 import tasksRouter from "./routes/tasks.js";
 import dashboardRouter from "./routes/dashboard.js";
 import habitsRouter from "./routes/habits.js";
-import aiRouter from "./routes/ai.js";
 
 const app = express();
 
@@ -30,7 +29,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/tasks", tasksRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/habits", habitsRouter);
-app.use("/api/ai", aiRouter);
 
 // System Status Check
 app.get("/api/status", (req, res) => {

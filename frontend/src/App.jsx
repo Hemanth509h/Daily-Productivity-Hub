@@ -15,6 +15,8 @@ import Settings from "@/pages/Settings";
 import Admin from "@/pages/Admin";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 import Layout from "@/components/Layout";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { setBaseUrl, setAuthTokenGetter } from "@/api-client-react";
@@ -36,6 +38,8 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
 
       {/* Admin Routes */}
       <Route path="/admin" component={Admin} />

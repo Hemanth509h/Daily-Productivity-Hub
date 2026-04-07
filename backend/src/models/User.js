@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema({
   level: { type: Number },
   streak: { type: Number },
   avatarUrl: { type: String },
+  resetToken: { type: String },
+  resetTokenExpiry: { type: Date },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
