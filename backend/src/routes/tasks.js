@@ -37,14 +37,16 @@ router.post("/", requireAuth, async (req, res) => {
       return res.status(400).json({ error: parsed.error.issues[0].message });
     }
 
-    const newTask = await Task.create({
+    const taskData = {
       ...parsed.data,
       userId: req.user.userId,
       startDate: parsed.data.startDate ? new Date(parsed.data.startDate) : null,
       deadlineDate: parsed.data.deadlineDate ? new Date(parsed.data.deadlineDate) : null,
       reminderTime: parsed.data.reminderTime ? new Date(parsed.data.reminderTime) : null,
-      tags: parsed.data.tags ? parsed.data.tags.split(',').map(t => t.trim()) : [],
-    });
+      tags: typeof parsed.data.tags === 'string' ? parsed.data.tags.split(',').map(t => t.trim()) : [],
+    };
+
+    const newTask = await Task.create(taskData);
 
     console.log("[DEBUG] Task created successfully:", newTask._id);
     res.status(201).json(newTask);

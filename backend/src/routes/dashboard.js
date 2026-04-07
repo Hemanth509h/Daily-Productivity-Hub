@@ -71,7 +71,11 @@ router.get("/today", requireAuth, async (req, res) => {
 
     const todayTasks = await Task.find({
       userId: req.user.userId,
-      deadlineDate: { $gte: todayStart, $lte: todayEnd }
+      $or: [
+        { deadlineDate: { $gte: todayStart, $lte: todayEnd } },
+        { deadlineDate: null }
+      ],
+      completed: false
     });
 
     res.json(todayTasks);

@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://your-backend-url.com/api/:path*"
+      "destination": "https://daily-productivity-hub.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
