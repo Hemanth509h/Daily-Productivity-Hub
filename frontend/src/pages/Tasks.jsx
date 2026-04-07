@@ -31,7 +31,7 @@ export default function Tasks() {
   const updateTask = useUpdateTask();
 
   const handleTaskMove = (taskId, newStatus) => {
-    updateTask.mutate({ id: parseInt(taskId), data: { status: newStatus, completed: newStatus === 'completed' } }, {
+    updateTask.mutate({ id: taskId, data: { status: newStatus, completed: newStatus === 'completed' } }, {
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: getGetTasksQueryKey() });
         qc.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
@@ -107,7 +107,7 @@ export default function Tasks() {
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight mb-2">Daily Tasks</h1>
-            <p className="text-slate-400 text-sm font-medium">Manage your focus and track your progress.</p>
+            <p className="text-slate-400 text-sm font-medium">Manage your daily tasks and track your progress.</p>
           </div>
           <div className="flex items-center gap-3">
              <button 
@@ -164,22 +164,7 @@ export default function Tasks() {
           )}
         </div>
 
-        {/* Deep Focus Session Card */}
-        <div className="bg-slate-100/50 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 border border-slate-200/50 relative overflow-hidden group">
-          <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-slate-200/30 to-transparent pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="max-w-md">
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-3">Deep Focus Session</h3>
-              <p className="text-slate-500 font-medium leading-relaxed mb-6">You have 3 high-priority tasks left for today. Ready to start a 25-minute focus block?</p>
-              <button className="px-6 md:px-8 py-3 md:py-3.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-xl hover:shadow-slate-300 transition-all active:scale-95">
-                Start Timer
-              </button>
-            </div>
-            <div className="text-[60px] md:text-[100px] font-black text-slate-200 tracking-tighter leading-none select-none group-hover:text-slate-300 transition-colors duration-500 text-center md:text-right">
-              25:00
-            </div>
-          </div>
-        </div>
+
       </main>
 
       {showQuickAdd && <QuickAddModal onClose={() => setShowQuickAdd(false)} />}

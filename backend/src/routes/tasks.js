@@ -26,8 +26,16 @@ router.get("/", requireAuth, async (req, res) => {
 
 router.post("/", requireAuth, async (req, res) => {
   try {
+    console.log("[DEBUG] POST /tasks - Request body:", req.body);
+    console.log("[DEBUG] User ID:", req.user?.userId);
+    
     const parsed = CreateTaskBody.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
+    console.log("[DEBUG] Validation result:", parsed.success ? 'PASS' : 'FAIL', parsed.error?.issues);
+    
+    if (!parsed.success) {
+      console.log("[DEBUG] Validation error:", parsed.error.issues[0].message);
+      return res.status(400).json({ error: parsed.error.issues[0].message });
+    }
 
     const newTask = await Task.create({
       ...parsed.data,
@@ -38,8 +46,10 @@ router.post("/", requireAuth, async (req, res) => {
       tags: parsed.data.tags ? parsed.data.tags.split(',').map(t => t.trim()) : [],
     });
 
+    console.log("[DEBUG] Task created successfully:", newTask._id);
     res.status(201).json(newTask);
   } catch (err) {
+    console.error("[DEBUG] Create task error:", err);
     logger.error(err, "Create task error");
     res.status(500).json({ error: "Internal server error" });
   }

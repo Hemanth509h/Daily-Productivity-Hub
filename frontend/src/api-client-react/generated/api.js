@@ -187,7 +187,7 @@ const getUpdateTaskUrl = (id) => {
 const updateTask = async (id, updateTaskBody, options) => {
   return customFetch(getUpdateTaskUrl(id), {
     ...options,
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateTaskBody)
   });

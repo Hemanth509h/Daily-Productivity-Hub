@@ -34,15 +34,15 @@ export default function Dashboard() {
           {greeting}{user?.name ? `, ${user.name.split(' ')[0]}` : ''}.
         </h1>
         <p className="text-slate-400 text-sm md:text-base font-medium max-w-xl leading-relaxed">
-          You have {todayTasks?.length ?? 0} tasks to focus on today. Start with the urgent ones.
+          You have {todayTasks?.length ?? 0} tasks for today. Start with the urgent ones.
         </p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Left Col: Daily Focus */}
+        {/* Left Col: Today's Tasks */}
         <div className="lg:col-span-8 space-y-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">Daily Focus</h3>
+            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">Today's Tasks</h3>
             <Link href="/tasks" className="text-xs font-black text-primary uppercase tracking-widest hover:underline">View All Tasks</Link>
           </div>
           
@@ -90,7 +90,7 @@ export default function Dashboard() {
                   <IconPlus size={32} />
                 </div>
                 <h4 className="text-lg font-bold text-slate-600 mb-2">Workspace Clear</h4>
-                <p className="text-sm text-slate-400">Time to plan your next successful focus block.</p>
+                <p className="text-sm text-slate-400">Time to plan your next tasks.</p>
               </div>
             )}
           </div>

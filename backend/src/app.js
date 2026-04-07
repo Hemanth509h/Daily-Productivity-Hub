@@ -15,11 +15,7 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: { error: "Too many requests from this IP, please try again later." }
-});
+
 
 app.use(pinoHttp({ logger, autoLogging: false }));
 app.use(helmet({ contentSecurityPolicy: false }));
@@ -27,7 +23,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use("/api", limiter);
+
 
 // Routes
 app.use("/api/auth", authRouter);

@@ -17,7 +17,13 @@ import Layout from "@/components/Layout";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { setBaseUrl, setAuthTokenGetter } from "@/api-client-react";
 
-setBaseUrl(window.location.origin);
+
+// Set API base URL - dev uses localhost:3001, prod uses same origin
+const apiBaseUrl = import.meta.env.VITE_API_URL || (
+  import.meta.env.DEV ? 'http://localhost:3001' : window.location.origin
+);
+setBaseUrl(apiBaseUrl);
+
 setAuthTokenGetter(async () => localStorage.getItem("sanctuary_access_token"));
 
 const queryClient = new QueryClient();

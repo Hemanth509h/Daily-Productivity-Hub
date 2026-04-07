@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useCreateTask, getGetTasksQueryKey, getGetDashboardSummaryQueryKey, getGetTodayTasksQueryKey, getGetUrgentTasksQueryKey } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 
 export default function QuickAddModal({ onClose }) {
   const qc = useQueryClient();
   const createTask = useCreateTask();
+  const { toast } = useToast();
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -16,21 +18,34 @@ export default function QuickAddModal({ onClose }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.title.trim()) return;
-    createTask.mutate({
-      data: {
-        title: form.title.trim(),
-        description: form.description || null,
-        ...(form.priority && { priority: form.priority }),
-        ...(form.category && { category: form.category }),
-        deadlineDate: form.deadlineDate ? new Date(form.deadlineDate).toISOString() : null,
-      },
-    }, {
+    
+    const taskData = {
+      title: form.title.trim(),
+      ...(form.description && { description: form.description }),
+      ...(form.priority && { priority: form.priority }),
+      ...(form.category && { category: form.category }),
+      ...(form.deadlineDate && { deadlineDate: new Date(form.deadlineDate).toISOString() }),
+    };
+    
+    createTask.mutate({ data: taskData }, {
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: getGetTasksQueryKey() });
         qc.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         qc.invalidateQueries({ queryKey: getGetTodayTasksQueryKey() });
         qc.invalidateQueries({ queryKey: getGetUrgentTasksQueryKey() });
+        toast({ 
+          title: 'Task created!', 
+          description: `"${form.title}" has been added to your tasks.` 
+        });
         onClose();
+      },
+      onError: (error) => {
+        const errorMsg = error?.message || 'Failed to create task';
+        toast({ 
+          title: 'Error creating task', 
+          description: errorMsg,
+        });
+        console.error('Task creation error:', error);
       },
     });
   };

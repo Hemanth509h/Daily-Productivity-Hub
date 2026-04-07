@@ -47,7 +47,6 @@ export default function Settings() {
   const [passwordError, setPasswordError] = useState('');
 
   // Preferences (local only)
-  const [focusDuration, setFocusDuration] = useState('25');
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     typeof Notification !== 'undefined' && Notification.permission === 'granted'
   );
@@ -113,15 +112,9 @@ export default function Settings() {
   };
 
   const savePreferences = () => {
-    localStorage.setItem('sanctuary_focus_duration', focusDuration);
     setPrefsSaved(true);
     setTimeout(() => setPrefsSaved(false), 2500);
   };
-
-  useEffect(() => {
-    const saved = localStorage.getItem('sanctuary_focus_duration');
-    if (saved) setFocusDuration(saved);
-  }, []);
 
   const StatusBanner = ({ status, error, successMsg = 'Changes saved!' }) => {
     if (!status) return null;
@@ -146,7 +139,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-xl space-y-4">
+    <div className="max-w-xl space-y-4 ">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-[1.9rem] font-bold text-foreground tracking-tight">Settings</h1>
@@ -261,65 +254,12 @@ export default function Settings() {
             </button>
           </div>
 
-          <div className="h-px bg-border" />
 
-          {/* Focus duration */}
-          <div>
-            <div className="text-[13.5px] font-semibold text-foreground mb-1">Default Focus Duration</div>
-            <div className="text-[12px] text-muted-foreground mb-3">Applied when you start a new focus session</div>
-            <div className="flex gap-2">
-              {['15', '25', '50'].map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setFocusDuration(d)}
-                  className={`px-5 py-2 rounded-xl text-[13px] font-bold border transition-all ${
-                    focusDuration === d
-                      ? 'border-transparent text-white shadow-sm'
-                      : 'border-border text-muted-foreground hover:bg-muted hover:border-muted-foreground/30'
-                  }`}
-                  style={focusDuration === d ? { background: 'linear-gradient(135deg, hsl(222,47%,20%), hsl(222,47%,28%))' } : {}}
-                >
-                  {d} min
-                </button>
-              ))}
-            </div>
-          </div>
 
-          <div className="flex items-center justify-between pt-1">
-            {prefsSaved ? (
-              <div className="flex items-center gap-2 text-[12.5px] text-green-600 font-semibold">
-                <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
-                  <IconCheck size={10} className="text-white" />
-                </div>
-                Preferences saved!
-              </div>
-            ) : <div />}
-            <button
-              onClick={savePreferences}
-              className="ml-auto px-5 py-2.5 rounded-xl text-[13px] font-bold text-white transition-all hover:shadow-md hover:scale-[1.01]"
-              style={{ background: 'linear-gradient(135deg, hsl(222,47%,20%) 0%, hsl(222,47%,28%) 100%)' }}
-            >
-              Save Preferences
-            </button>
-          </div>
+
         </div>
       </Section>
 
-      {/* PWA install */}
-      <Section title="Install App">
-        <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'hsl(213,33%,94%)' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="hsl(222,47%,30%)" strokeWidth="1.8" strokeLinecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-          </div>
-          <div className="flex-1">
-            <div className="text-[13.5px] font-semibold text-foreground">Native App Available</div>
-            <div className="text-[12.5px] text-muted-foreground mt-0.5 leading-relaxed">
-              Install Sanctuary on your device for a native app experience — works offline, no browser UI.
-              Look for the install icon in your browser's address bar.
-            </div>
-          </div>
-        </div>
-      </Section>
 
       {/* Danger zone */}
       <div className="bg-white rounded-2xl overflow-hidden"

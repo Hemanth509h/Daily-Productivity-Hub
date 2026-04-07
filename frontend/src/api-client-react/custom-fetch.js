@@ -203,32 +203,37 @@ async function parseSuccessBody(response, responseType, requestInfo) {
   }
 }
 async function customFetch(input, options = {}) {
-  input = applyBaseUrl(input);
-  const { responseType = "auto", headers: headersInit, ...init } = options;
-  const method = resolveMethod(input, init.method);
-  if (init.body != null && (method === "GET" || method === "HEAD")) {
-    throw new TypeError(`customFetch: ${method} requests cannot have a body.`);
-  }
-  const headers = mergeHeaders(isRequest(input) ? input.headers : void 0, headersInit);
-  if (typeof init.body === "string" && !headers.has("content-type") && looksLikeJson(init.body)) {
-    headers.set("content-type", "application/json");
-  }
-  if (responseType === "json" && !headers.has("accept")) {
-    headers.set("accept", DEFAULT_JSON_ACCEPT);
-  }
-  if (_authTokenGetter && !headers.has("authorization")) {
-    const token = await _authTokenGetter();
-    if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+  try {
+    input = applyBaseUrl(input);
+    const { responseType = "auto", headers: headersInit, ...init } = options;
+    const method = resolveMethod(input, init.method);
+    if (init.body != null && (method === "GET" || method === "HEAD")) {
+      throw new TypeError(`customFetch: ${method} requests cannot have a body.`);
     }
+    const headers = mergeHeaders(isRequest(input) ? input.headers : void 0, headersInit);
+    if (typeof init.body === "string" && !headers.has("content-type") && looksLikeJson(init.body)) {
+      headers.set("content-type", "application/json");
+    }
+    if (responseType === "json" && !headers.has("accept")) {
+      headers.set("accept", DEFAULT_JSON_ACCEPT);
+    }
+    if (_authTokenGetter && !headers.has("authorization")) {
+      const token = await _authTokenGetter();
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+    }
+    const requestInfo = { method, url: resolveUrl(input) };
+    const response = await fetch(input, { ...init, method, headers });
+    if (!response.ok) {
+      const errorData = await parseErrorBody(response, method);
+      throw new ApiError(response, errorData, requestInfo);
+    }
+    const result = await parseSuccessBody(response, responseType, requestInfo);
+    return result;
+  } catch (err) {
+    throw err;
   }
-  const requestInfo = { method, url: resolveUrl(input) };
-  const response = await fetch(input, { ...init, method, headers });
-  if (!response.ok) {
-    const errorData = await parseErrorBody(response, method);
-    throw new ApiError(response, errorData, requestInfo);
-  }
-  return await parseSuccessBody(response, responseType, requestInfo);
 }
 export {
   ApiError,

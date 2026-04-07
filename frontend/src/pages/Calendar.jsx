@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 import { useGetTasks } from '@/api-client-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, getDay, addMonths, subMonths } from 'date-fns';
 import { categoryBadgeClass } from '../lib/utils.js';
-import FocusTimer from '../components/FocusTimer.jsx';
+
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -37,9 +37,6 @@ export default function Calendar() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-5">
         <div>
           <h1 className="text-3xl font-bold text-foreground">{format(currentDate, 'MMMM yyyy')}</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">
-            Focus: {ongoingTask ? ongoingTask.title : 'No active focus'}
-          </p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -147,16 +144,7 @@ export default function Calendar() {
         </div>
       </div>
 
-      {/* Focus timer */}
-      {ongoingTask && (
-        <div className="mt-3 flex items-center justify-between bg-white border border-border rounded-xl px-4 py-3 shadow-sm">
-          <div className="flex items-center gap-3">
-            <span className="text-primary font-bold text-xs uppercase tracking-widest">In Focus</span>
-            <span className="text-sm font-bold text-foreground">{ongoingTask.title}</span>
-          </div>
-          <FocusTimer taskName={ongoingTask.title} />
-        </div>
-      )}
+
     </div>
   );
 }
