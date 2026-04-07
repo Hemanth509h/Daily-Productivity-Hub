@@ -39,7 +39,7 @@ export default function Tasks() {
     });
   };
 
-  const filteredTasks = (tasks || []).filter(t => {
+  const filteredTasks = (Array.isArray(tasks) ? tasks : []).filter(t => {
     if (filters.priority.length && !filters.priority.includes(t.priority)) return false;
     if (filters.category.length && !filters.category.includes(t.category)) return false;
     if (filters.search && !t.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
