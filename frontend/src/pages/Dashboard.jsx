@@ -50,7 +50,7 @@ export default function Dashboard() {
   const overdueCount = summary?.overdueCount ?? 0;
 
   return (
-    <div className="flex flex-col space-y-8 md:space-y-12 pb-20 md:pb-12">
+    <div className="flex flex-col space-y-8 md:space-y-12 pb-32 md:pb-12">
       {/* Header Section */}
       <header className="px-2">
         <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-2 md:mb-3">
@@ -191,6 +191,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      {/* Spacer for mobile nav clearance */}
+      <div className="h-6 md:hidden" />
     </div>
   );
 }
