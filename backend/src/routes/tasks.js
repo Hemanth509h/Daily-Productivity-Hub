@@ -89,6 +89,30 @@ router.patch("/:id", requireAuth, async (req, res) => {
   }
 });
 
+router.put("/:id", requireAuth, async (req, res) => {
+  try {
+    const parsed = UpdateTaskBody.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
+
+    const updates = { ...parsed.data };
+    if (parsed.data.startDate) updates.startDate = new Date(parsed.data.startDate);
+    if (parsed.data.deadlineDate) updates.deadlineDate = new Date(parsed.data.deadlineDate);
+    if (parsed.data.reminderTime) updates.reminderTime = new Date(parsed.data.reminderTime);
+    if (typeof parsed.data.tags === 'string') updates.tags = parsed.data.tags.split(',').map(t => t.trim());
+
+    const updated = await Task.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.userId },
+      { $set: updates },
+      { returnDocument: 'after' }
+    );
+
+    if (!updated) return res.status(404).json({ error: "Task not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.delete("/:id", requireAuth, async (req, res) => {
   try {
     const deleted = await Task.findOneAndDelete({ _id: req.params.id, userId: req.user.userId });
