@@ -16,6 +16,8 @@ export default function Login() {
   const { login } = useAuth();
   const loginMutation = useLogin();
   const [form, setForm] = useState({ email: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [, navigate] = useLocation();
   const { toast } = useToast();
@@ -23,15 +25,30 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
+    
+    if (!form.email || !form.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
     loginMutation.mutate({ data: form }, {
       onSuccess: (data) => {
         login(data);
+        if (rememberMe) localStorage.setItem('sanctuary_remember_email', form.email);
         toast({ title: 'Welcome back!', description: 'You have signed in successfully.' });
         navigate('/');
       },
       onError: (err) => setError(err?.data?.error || 'Invalid credentials. Please try again.'),
     });
   };
+
+  React.useEffect(() => {
+    const savedEmail = localStorage.getItem('sanctuary_remember_email');
+    if (savedEmail) {
+      setForm(prev => ({ ...prev, email: savedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex" style={{ background: 'hsl(213,33%,95%)' }}>
@@ -146,15 +163,41 @@ export default function Login() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-[11px] font-bold text-foreground/60 uppercase tracking-wider">Password</label>
-                  <button type="button" className="text-[11px] text-primary font-medium hover:underline">Forgot?</button>
+                  <Link href="#" className="text-[11px] text-primary font-medium hover:underline">Forgot?</Link>
                 </div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    required autoComplete="current-password"
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 pr-10 border border-border rounded-xl text-[13.5px] outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground/60 transition-colors"
+                  >
+                    {showPassword ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 py-2">
                 <input
-                  type="password" value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required autoComplete="current-password"
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 border border-border rounded-xl text-[13.5px] outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+                  type="checkbox"
+                  id="remember"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded accent-primary cursor-pointer"
                 />
+                <label htmlFor="remember" className="text-[12px] text-muted-foreground font-medium cursor-pointer hover:text-foreground transition-colors">
+                  Remember me
+                </label>
               </div>
               <button
                 type="submit"
@@ -171,15 +214,7 @@ export default function Login() {
               </button>
             </form>
 
-            {/* Demo hint */}
-            <button
-              type="button"
-              onClick={() => setForm({ email: 'demo@sanctuary.app', password: 'demo1234' })}
-              className="mt-4 w-full p-3 rounded-xl text-center transition-all hover:opacity-80 active:scale-[0.99] cursor-pointer"
-              style={{ background: 'hsl(213,33%,96%)', border: '1px dashed hsl(213,25%,85%)' }}
-            >
-              <div className="text-[11px] text-muted-foreground font-medium">Click to use demo: <span className="font-bold text-foreground">demo@sanctuary.app</span> / <span className="font-bold text-foreground">demo1234</span></div>
-            </button>
+           
 
             <p className="text-center text-[13px] text-muted-foreground mt-5">
               Don't have an account?{' '}

@@ -12,6 +12,7 @@ import TaskDetail from "@/pages/TaskDetail";
 import Habits from "@/pages/Habits";
 import Calendar from "@/pages/Calendar";
 import Settings from "@/pages/Settings";
+import Admin from "@/pages/Admin";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Layout from "@/components/Layout";
@@ -35,6 +36,9 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+
+      {/* Admin Routes */}
+      <Route path="/admin" component={Admin} />
 
       {/* Protected Routes */}
       <Route>

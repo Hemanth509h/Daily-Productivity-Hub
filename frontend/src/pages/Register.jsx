@@ -12,17 +12,49 @@ const features = [
   'PWA — works offline too',
 ];
 
+const getPasswordStrength = (password) => {
+  let strength = 0;
+  if (password.length >= 6) strength++;
+  if (password.length >= 8) strength++;
+  if (/[A-Z]/.test(password)) strength++;
+  if (/[0-9]/.test(password)) strength++;
+  if (/[^A-Za-z0-9]/.test(password)) strength++;
+  return strength;
+};
+
 export default function Register() {
   const { login } = useAuth();
   const registerMutation = useRegister();
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '' });
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [, navigate] = useLocation();
   const { toast } = useToast();
 
+  const passwordStrength = getPasswordStrength(form.password);
+  const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+  const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-emerald-500'];
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
+
+    if (!form.firstName || !form.lastName || !form.email || !form.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (!agreedToTerms) {
+      setError('You must agree to the terms and conditions');
+      return;
+    }
+
+    if (form.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
     registerMutation.mutate({ data: form }, {
       onSuccess: (data) => {
         login(data);
@@ -151,17 +183,42 @@ export default function Register() {
               </div>
               <div>
                 <label className="block text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Password</label>
-                <input
-                  type="password" value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required minLength={6} autoComplete="new-password"
-                  placeholder="Min. 6 characters"
-                  className="w-full px-4 py-3 border border-border rounded-xl text-[13.5px] outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
-                />
+                <div className="relative mb-2">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    required minLength={6} autoComplete="new-password"
+                    placeholder="Min. 6 characters"
+                    className="w-full px-4 py-3 pr-10 border border-border rounded-xl text-[13.5px] outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground/60 transition-colors"
+                  >
+                    {showPassword ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    )}
+                  </button>
+                </div>
+                {form.password && (
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${strengthColors[Math.min(passwordStrength - 1, 4)]}`}
+                        style={{ width: `${(passwordStrength / 5) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-bold text-foreground/60 uppercase tracking-wider">{strengthLabels[Math.min(passwordStrength - 1, 4)]}</span>
+                  </div>
+                )}
               </div>
               <button
-                type="submit" disabled={registerMutation.isPending}
-                className="w-full py-3 rounded-xl text-[13.5px] font-bold text-white transition-all hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 mt-1"
+                type="submit" disabled={registerMutation.isPending || !agreedToTerms}
+                className="w-full py-3 rounded-xl text-[13.5px] font-bold text-white transition-all hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 mt-3"
                 style={{ background: 'linear-gradient(135deg, hsl(222,47%,20%) 0%, hsl(222,47%,28%) 100%)', boxShadow: '0 2px 8px rgba(27,43,75,0.3)' }}
               >
                 {registerMutation.isPending ? (
@@ -171,6 +228,19 @@ export default function Register() {
                   </span>
                 ) : 'Create Account'}
               </button>
+
+              <div className="flex items-start gap-2.5 py-3 mt-2">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="w-4 h-4 rounded accent-primary cursor-pointer mt-0.5 flex-shrink-0"
+                />
+                <label htmlFor="terms" className="text-[11px] text-muted-foreground font-medium cursor-pointer hover:text-foreground transition-colors">
+                  I agree to the <Link href="#" className="text-primary hover:underline">Terms of Service</Link> and <Link href="#" className="text-primary hover:underline">Privacy Policy</Link>
+                </label>
+              </div>
             </form>
 
             <p className="text-center text-[13px] text-muted-foreground mt-5">
