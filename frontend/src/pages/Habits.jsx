@@ -50,10 +50,10 @@ export default function Habits() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {(habits || []).map(habit => (
+        {(Array.isArray(habits) ? habits : []).map(habit => (
           <HabitCard key={habit.id} habit={habit} onLog={() => logHabit.mutate(habit.id)} />
         ))}
-        {!(habits?.length) && <EmptyState onClick={() => setShowAdd(true)} />}
+        {(!Array.isArray(habits) || !habits.length) && <EmptyState onClick={() => setShowAdd(true)} />}
       </div>
 
       {showAdd && (

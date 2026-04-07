@@ -23,13 +23,13 @@ export default function Calendar() {
   }
 
   const getTasksForDay = (day) => {
-    if (!day || !tasks) return [];
+    if (!day || !Array.isArray(tasks)) return [];
     return tasks.filter((t) => t.deadlineDate && isSameDay(new Date(t.deadlineDate), day));
   };
 
-  const unscheduled = (tasks || []).filter((t) => !t.deadlineDate && !t.completed);
+  const unscheduled = (Array.isArray(tasks) ? tasks : []).filter((t) => !t.deadlineDate && !t.completed);
 
-  const ongoingTask = (tasks || []).find((t) => !t.completed);
+  const ongoingTask = (Array.isArray(tasks) ? tasks : []).find((t) => !t.completed);
 
   return (
     <div className="flex flex-col h-full gap-0">
