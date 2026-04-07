@@ -19,6 +19,10 @@ import { setBaseUrl, setAuthTokenGetter } from "@/api-client-react";
 
 
 
+// Set API base URL - during dev Vite proxies /api to the backend, in prod it's same-origin
+// This ensures that the generated API client points to the correct endpoint.
+const apiBaseUrl = import.meta.env.VITE_API_URL || '';
+setBaseUrl(apiBaseUrl);
 
 setAuthTokenGetter(async () => localStorage.getItem("sanctuary_access_token"));
 
