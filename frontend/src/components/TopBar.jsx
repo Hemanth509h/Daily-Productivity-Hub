@@ -5,7 +5,7 @@ import { IconSearch, IconBell, IconPlus } from './Icons.jsx';
 import QuickAddModal from './QuickAddModal.jsx';
 
 export default function TopBar({ onMenuClick }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [search, setSearch] = useState('');
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
