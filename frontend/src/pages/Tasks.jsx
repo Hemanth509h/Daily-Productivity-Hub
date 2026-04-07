@@ -23,6 +23,7 @@ export default function Tasks() {
   const [viewMode, setViewMode] = useState('list'); 
   const [filters, setFilters] = useState({ priority: [], category: [], search: '' });
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: tasks, isLoading } = useGetTasks();
   const { data: summary } = useGetDashboardSummary();
@@ -102,14 +103,17 @@ export default function Tasks() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-10 space-y-10">
-        <header className="flex items-center justify-between">
+      <main className="flex-1 overflow-y-auto p-4 md:p-10 space-y-4 md:space-y-10">
+        <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">Daily Tasks</h1>
+            <h1 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight mb-2">Daily Tasks</h1>
             <p className="text-slate-400 text-sm font-medium">Manage your focus and track your progress.</p>
           </div>
           <div className="flex items-center gap-3">
-             <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black text-slate-600 bg-white border border-slate-200 uppercase tracking-widest hover:bg-slate-50">
+             <button 
+               onClick={() => setShowFilters(true)}
+               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black text-slate-600 bg-white border border-slate-200 uppercase tracking-widest hover:bg-slate-50"
+             >
                 <IconFilter size={14} />
                 Filters
              </button>
@@ -132,7 +136,7 @@ export default function Tasks() {
         </section>
 
         {/* Task List Header */}
-        <div className="flex items-center px-6 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-slate-300">
+        <div className="hidden md:flex items-center px-6 py-2 text-[10px] font-black uppercase tracking-[0.15em] text-slate-300">
            <div className="flex-1 pl-12">Task Title</div>
            <div className="w-24 text-center">Priority</div>
            <div className="w-32 text-center">Deadline</div>
@@ -161,17 +165,17 @@ export default function Tasks() {
         </div>
 
         {/* Deep Focus Session Card */}
-        <div className="bg-slate-100/50 rounded-[2.5rem] p-10 border border-slate-200/50 relative overflow-hidden group">
+        <div className="bg-slate-100/50 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 border border-slate-200/50 relative overflow-hidden group">
           <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-slate-200/30 to-transparent pointer-events-none" />
-          <div className="relative z-10 flex items-center justify-between">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-md">
-              <h3 className="text-2xl font-black text-slate-900 mb-3">Deep Focus Session</h3>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-3">Deep Focus Session</h3>
               <p className="text-slate-500 font-medium leading-relaxed mb-6">You have 3 high-priority tasks left for today. Ready to start a 25-minute focus block?</p>
-              <button className="px-8 py-3.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-xl hover:shadow-slate-300 transition-all active:scale-95">
+              <button className="px-6 md:px-8 py-3 md:py-3.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-xl hover:shadow-slate-300 transition-all active:scale-95">
                 Start Timer
               </button>
             </div>
-            <div className="text-[100px] font-black text-slate-200 tracking-tighter leading-none select-none group-hover:text-slate-300 transition-colors duration-500">
+            <div className="text-[60px] md:text-[100px] font-black text-slate-200 tracking-tighter leading-none select-none group-hover:text-slate-300 transition-colors duration-500 text-center md:text-right">
               25:00
             </div>
           </div>
@@ -179,6 +183,67 @@ export default function Tasks() {
       </main>
 
       {showQuickAdd && <QuickAddModal onClose={() => setShowQuickAdd(false)} />}
+
+      {/* Mobile Filters Modal */}
+      {showFilters && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowFilters(false)} />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-slate-900">Filters</h3>
+              <button onClick={() => setShowFilters(false)} className="p-2 text-slate-400 hover:text-slate-900">
+                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <section className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Priority</h4>
+                <div className="flex flex-wrap gap-2">
+                  {PRIORITIES.map(p => (
+                    <button 
+                      key={p}
+                      onClick={() => setFilters(f => ({ ...f, priority: f.priority.includes(p) ? f.priority.filter(x => x !== p) : [...f.priority, p] }))}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg text-[11px] font-extrabold border transition-all capitalize",
+                        filters.priority.includes(p) ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200 text-slate-500"
+                      )}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Category</h4>
+                <div className="space-y-3">
+                  {CATEGORIES.map(c => (
+                    <label key={c} className="flex items-center gap-3 cursor-pointer group">
+                      <input 
+                        type="checkbox" 
+                        className="hidden"
+                        checked={filters.category.includes(c)}
+                        onChange={() => setFilters(f => ({ ...f, category: f.category.includes(c) ? f.category.filter(x => x !== c) : [...f.category, c] }))}
+                      />
+                      <div className={cn(
+                        "w-4 h-4 rounded border-2 transition-all flex items-center justify-center",
+                        filters.category.includes(c) ? "bg-primary border-primary" : "border-slate-200 group-hover:border-slate-300"
+                      )}>
+                        {filters.category.includes(c) && <IconCheck size={10} className="text-white" strokeWidth={4} />}
+                      </div>
+                      <div className={cn("w-2 h-2 rounded-full", c === 'work' ? 'bg-primary' : c === 'personal' ? 'bg-emerald-400' : 'bg-amber-400')} />
+                      <span className="text-[13px] font-medium text-slate-600 capitalize">{c}</span>
+                    </label>
+                  ))}
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -219,57 +284,93 @@ const StatBadge = ({ label, value, increase, variant = 'default' }) => (
 const TaskCard = ({ task, onDelete, onToggle, onClick }) => (
   <div 
     onClick={onClick}
-    className="bg-white p-6 rounded-[2rem] border border-slate-100 flex items-center gap-6 hover:shadow-xl hover:shadow-slate-200/40 transition-all cursor-pointer group animate-in slide-in-from-bottom-2"
+    className="bg-white p-4 md:p-6 rounded-[2rem] border border-slate-100 flex flex-col md:flex-row md:items-center gap-4 md:gap-6 hover:shadow-xl hover:shadow-slate-200/40 transition-all cursor-pointer group animate-in slide-in-from-bottom-2"
   >
-    <button 
-      onClick={(e) => { e.stopPropagation(); onToggle(task.id, task.completed ? 'pending' : 'completed'); }}
-      className={cn(
-        "w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all",
-        task.completed ? "bg-emerald-50 border-emerald-50 text-white" : "border-slate-100 group-hover:border-primary/30"
-      )}
-    >
-      {task.completed && <IconCheck size={18} strokeWidth={3} />}
-    </button>
+    <div className="flex items-center gap-4 md:gap-6 flex-1">
+      <button 
+        onClick={(e) => { e.stopPropagation(); onToggle(task.id, task.completed ? 'pending' : 'completed'); }}
+        className={cn(
+          "w-8 h-8 md:w-10 md:h-10 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0",
+          task.completed ? "bg-emerald-50 border-emerald-50 text-white" : "border-slate-100 group-hover:border-primary/30"
+        )}
+      >
+        {task.completed && <IconCheck size={16} strokeWidth={3} />}
+      </button>
 
-    <div className="flex-1 min-w-0">
-      <h4 className={cn("text-lg font-bold truncate group-hover:text-primary transition-colors", task.completed ? "text-slate-300 line-through" : "text-slate-800")}>
-        {task.title}
-      </h4>
-      <div className="flex items-center gap-3 mt-1.5">
-        {task.category && <span className="text-[11px] font-bold text-slate-400 capitalize">{task.category}</span>}
+      <div className="flex-1 min-w-0">
+        <h4 className={cn("text-base md:text-lg font-bold truncate group-hover:text-primary transition-colors", task.completed ? "text-slate-300 line-through" : "text-slate-800")}>
+          {task.title}
+        </h4>
+        <div className="flex items-center gap-3 mt-1.5">
+          {task.category && <span className="text-[11px] font-bold text-slate-400 capitalize">{task.category}</span>}
+        </div>
       </div>
     </div>
 
-    <div className="w-24 flex justify-center">
-       {task.priority ? (
-         <span className={cn(
-           "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
-           task.priority === 'high' ? "bg-rose-50 text-rose-500" : task.priority === 'medium' ? "bg-amber-50 text-amber-500" : "bg-slate-100 text-slate-400"
-         )}>
-           {task.priority}
-         </span>
-       ) : <span className="text-[11px] text-slate-300">—</span>}
+    <div className="flex items-center justify-between md:justify-end gap-4">
+      <div className="flex items-center gap-4">
+        <div className="hidden md:block w-24 text-center">
+           {task.priority ? (
+             <span className={cn(
+               "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
+               task.priority === 'high' ? "bg-rose-50 text-rose-500" : task.priority === 'medium' ? "bg-amber-50 text-amber-500" : "bg-slate-100 text-slate-400"
+             )}>
+               {task.priority}
+             </span>
+           ) : <span className="text-[11px] text-slate-300">—</span>}
+        </div>
+
+        <div className="hidden md:block w-32 text-center">
+           <div className={cn("text-[11px] font-bold", task.completed ? "text-slate-300" : task.deadlineDate ? "text-rose-500" : "text-slate-300")}>
+             {task.completed ? 'Completed' : task.deadlineDate ? formatDeadline(task.deadlineDate) : '—'}
+           </div>
+           {!task.completed && task.deadlineDate && (
+             <div className="text-[9px] font-black uppercase tracking-[0.05em] text-rose-300 mt-0.5">{getTimeLeft(task.deadlineDate)}</div>
+           )}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-1 opacity-0 md:opacity-100 md:group-hover:opacity-100 transition-opacity">
+        <button className="p-2 text-slate-300 hover:text-slate-900 transition-colors">
+          <IconEdit size={18} />
+        </button>
+        <button 
+          onClick={(e) => { e.stopPropagation(); onDelete(task.id); }}
+          className="p-2 text-slate-300 hover:text-rose-500 transition-colors"
+        >
+          <IconTrash size={18} />
+        </button>
+      </div>
     </div>
 
-    <div className="w-32 text-center">
-       <div className={cn("text-[11px] font-bold", task.completed ? "text-slate-300" : task.deadlineDate ? "text-rose-500" : "text-slate-300")}>
-         {task.completed ? 'Completed' : task.deadlineDate ? formatDeadline(task.deadlineDate) : '—'}
-       </div>
-       {!task.completed && task.deadlineDate && (
-         <div className="text-[9px] font-black uppercase tracking-[0.05em] text-rose-300 mt-0.5">{getTimeLeft(task.deadlineDate)}</div>
-       )}
-    </div>
-
-    <div className="w-24 flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-      <button className="p-2 text-slate-300 hover:text-slate-900 transition-colors">
-        <IconEdit size={18} />
-      </button>
-      <button 
-        onClick={(e) => { e.stopPropagation(); onDelete(task.id); }}
-        className="p-2 text-slate-300 hover:text-rose-500 transition-colors"
-      >
-        <IconTrash size={18} />
-      </button>
+    {/* Mobile details */}
+    <div className="md:hidden flex items-center justify-between text-xs text-slate-400">
+      <div className="flex items-center gap-4">
+        {task.priority && (
+          <span className={cn(
+            "px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest",
+            task.priority === 'high' ? "bg-rose-50 text-rose-500" : task.priority === 'medium' ? "bg-amber-50 text-amber-500" : "bg-slate-100 text-slate-400"
+          )}>
+            {task.priority}
+          </span>
+        )}
+        {task.deadlineDate && (
+          <div className={cn("font-bold", task.completed ? "text-slate-300" : "text-rose-500")}>
+            {task.completed ? 'Completed' : formatDeadline(task.deadlineDate)}
+          </div>
+        )}
+      </div>
+      <div className="flex gap-2">
+        <button className="p-1 text-slate-300 hover:text-slate-900 transition-colors">
+          <IconEdit size={16} />
+        </button>
+        <button 
+          onClick={(e) => { e.stopPropagation(); onDelete(task.id); }}
+          className="p-1 text-slate-300 hover:text-rose-500 transition-colors"
+        >
+          <IconTrash size={16} />
+        </button>
+      </div>
     </div>
   </div>
 );

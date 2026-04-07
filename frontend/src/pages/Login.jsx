@@ -109,7 +109,7 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
             <MemorizeLogo size={32} />
-            <span className="font-bold text-foreground">The Sanctuary</span>
+            <span className="font-bold text-foreground">Memorize</span>
           </div>
 
           <div className="bg-white rounded-2xl p-8" style={{ boxShadow: '0 4px 32px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)', border: '1px solid hsl(213,25%,90%)' }}>

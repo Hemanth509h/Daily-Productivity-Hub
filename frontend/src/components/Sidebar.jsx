@@ -51,7 +51,7 @@ export default function Sidebar({ open, onClose }) {
             <MemorizeLogo size={24} />
           </div>
           <div className="flex-1">
-            <div className="text-slate-900 font-bold text-sm tracking-tight leading-none mb-1">The Sanctuary</div>
+            <div className="text-slate-900 font-bold text-sm tracking-tight leading-none mb-1">Memorize</div>
             <div className="text-slate-400 font-black text-[9px] tracking-[0.2em] uppercase">Daily Focus</div>
           </div>
           {/* Close button on mobile */}
