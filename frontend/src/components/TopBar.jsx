@@ -4,7 +4,7 @@ import { Link } from 'wouter';
 import { IconSearch, IconBell, IconPlus } from './Icons.jsx';
 import QuickAddModal from './QuickAddModal.jsx';
 
-export default function TopBar() {
+export default function TopBar({ onMenuClick }) {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [showQuickAdd, setShowQuickAdd] = useState(false);
@@ -12,7 +12,18 @@ export default function TopBar() {
 
   return (
     <>
-      <header className="h-16 flex items-center px-8 gap-6 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 flex-shrink-0 sticky top-0 z-30">
+      <header className="h-14 md:h-16 flex items-center px-4 md:px-8 gap-3 md:gap-6 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 flex-shrink-0 sticky top-0 z-30">
+        {/* Hamburger — mobile only */}
+        <button
+          onClick={onMenuClick}
+          className="md:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 transition-all"
+          aria-label="Open menu"
+        >
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+
         {/* Search */}
         <div className="flex-1 max-w-xl relative group">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors pointer-events-none">
@@ -20,7 +31,7 @@ export default function TopBar() {
           </span>
           <input
             type="search"
-            placeholder="Search tasks, events, or files..."
+            placeholder="Search tasks..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-2.5 text-[13.5px] rounded-xl border-none outline-none focus:ring-4 focus:ring-primary/5 placeholder:text-slate-400 font-medium transition-all"
@@ -28,14 +39,14 @@ export default function TopBar() {
           />
         </div>
 
-        <div className="flex items-center gap-4 ml-auto">
+        <div className="flex items-center gap-2 md:gap-4 ml-auto">
           {/* Quick Add */}
           <button
             onClick={() => setShowQuickAdd(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black text-white transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-95 bg-primary uppercase tracking-widest"
+            className="flex items-center gap-2 px-3 md:px-5 py-2.5 rounded-xl text-[11px] font-black text-white transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-95 bg-primary uppercase tracking-widest"
           >
             <IconPlus size={14} strokeWidth={3} />
-            Quick Add
+            <span className="hidden md:inline">Quick Add</span>
           </button>
 
           {/* Bell */}

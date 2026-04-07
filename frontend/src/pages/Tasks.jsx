@@ -48,7 +48,7 @@ export default function Tasks() {
   return (
     <div className="flex h-full bg-slate-50/20">
       {/* Left Filter Sidebar */}
-      <aside className="w-64 flex-shrink-0 border-r border-slate-200/60 p-8 space-y-10 overflow-y-auto">
+      <aside className="hidden md:flex md:flex-col w-64 flex-shrink-0 border-r border-slate-200/60 p-8 space-y-10 overflow-y-auto">
         <section className="space-y-4">
           <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Time Range</h4>
           <div className="space-y-3">
@@ -124,7 +124,7 @@ export default function Tasks() {
         </header>
 
         {/* Stats Row */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           <StatBadge label="Total Active" value={summary?.totalActive ?? 0} />
           <StatBadge label="In Progress" value={summary?.inProgress ?? 0} />
           <StatBadge label="Completed" value={summary?.completedToday ?? 0} />

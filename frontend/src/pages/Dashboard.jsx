@@ -30,10 +30,10 @@ export default function Dashboard() {
     <div className="flex flex-col h-full space-y-12 pb-12">
       {/* Header Section */}
       <header className="px-2">
-        <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-3">
+        <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-2 md:mb-3">
           {greeting}{user?.name ? `, ${user.name.split(' ')[0]}` : ''}.
         </h1>
-        <p className="text-slate-400 text-base font-medium max-w-xl leading-relaxed">
+        <p className="text-slate-400 text-sm md:text-base font-medium max-w-xl leading-relaxed">
           You have {todayTasks?.length ?? 0} tasks to focus on today. Start with the urgent ones.
         </p>
       </header>

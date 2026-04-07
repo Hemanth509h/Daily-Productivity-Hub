@@ -35,7 +35,7 @@ export default function Habits() {
 
   return (
     <div className="flex flex-col h-full max-w-5xl mx-auto space-y-8">
-      <header className="flex items-center justify-between px-2">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Consistency King</h1>
           <p className="text-slate-500 text-sm mt-1 font-medium">Small daily steps lead to massive results.</p>

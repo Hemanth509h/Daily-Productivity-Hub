@@ -34,7 +34,7 @@ export default function Calendar() {
   return (
     <div className="flex flex-col h-full gap-0">
       {/* Header */}
-      <div className="flex items-start justify-between mb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-5">
         <div>
           <h1 className="text-3xl font-bold text-foreground">{format(currentDate, 'MMMM yyyy')}</h1>
           <p className="text-muted-foreground text-sm mt-0.5">
