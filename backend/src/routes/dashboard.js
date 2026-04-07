@@ -69,6 +69,7 @@ router.get("/today", requireAuth, async (req, res) => {
     const todayEnd = new Date();
     todayEnd.setHours(23, 59, 59, 999);
 
+    // Try to get tasks due today (or with no deadline)
     const todayTasks = await Task.find({
       userId: req.user.userId,
       $or: [
@@ -76,9 +77,20 @@ router.get("/today", requireAuth, async (req, res) => {
         { deadlineDate: null }
       ],
       completed: false
-    });
+    }).sort({ createdAt: -1 });
 
-    res.json(todayTasks);
+    // If no tasks for today, return the next 5 upcoming tasks
+    if (todayTasks.length === 0) {
+      const upcomingTasks = await Task.find({
+        userId: req.user.userId,
+        deadlineDate: { $gt: todayEnd },
+        completed: false
+      }).sort({ deadlineDate: 1 }).limit(5);
+
+      return res.json({ tasks: upcomingTasks, isFallback: true });
+    }
+
+    res.json({ tasks: todayTasks, isFallback: false });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -87,17 +99,54 @@ router.get("/today", requireAuth, async (req, res) => {
 router.get("/urgent", requireAuth, async (req, res) => {
   try {
     const now = new Date();
-    const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+    const in72h = new Date(now.getTime() + 72 * 60 * 60 * 1000);
 
-    const urgentTasks = await Task.find({ userId: req.user.userId, completed: false });
+    const allPending = await Task.find({ userId: req.user.userId, completed: false });
 
-    const filtered = urgentTasks.filter(t => {
-      if (t.priority === "high") return true;
-      if (t.deadlineDate && new Date(t.deadlineDate) <= in48h) return true;
-      return false;
-    }).slice(0, 5);
+    // Include all overdue tasks
+    const overdue = allPending.filter(t => 
+      t.status === "overdue" || (t.deadlineDate && new Date(t.deadlineDate) < now)
+    );
 
-    res.json(filtered);
+    // High priority tasks (not overdue)
+    const highPriority = allPending.filter(t => 
+      t.priority === "high" && !overdue.includes(t)
+    );
+
+    // Near deadline (within 72h, not overdue or high priority)
+    const nearDeadline = allPending.filter(t => 
+      t.deadlineDate && 
+      new Date(t.deadlineDate) >= now && 
+      new Date(t.deadlineDate) <= in72h && 
+      !overdue.includes(t) && 
+      !highPriority.includes(t)
+    );
+
+    let urgentList = [...overdue, ...highPriority, ...nearDeadline];
+
+    // Fallback: include medium priority if high/overdue tasks are scarce
+    if (urgentList.length < 5) {
+      const mediumPriority = allPending.filter(t => 
+        t.priority === "medium" && !urgentList.includes(t)
+      );
+      const needed = 5 - urgentList.length;
+      urgentList = [...urgentList, ...mediumPriority.slice(0, needed)];
+    }
+
+    // Sort: Overdue first, then by nearest deadline, then by priority
+    urgentList.sort((a, b) => {
+      const isOverdue = (t) => t.status === "overdue" || (t.deadlineDate && new Date(t.deadlineDate) < now);
+      const aOverdue = isOverdue(a);
+      const bOverdue = isOverdue(b);
+      if (aOverdue && !bOverdue) return -1;
+      if (!aOverdue && bOverdue) return 1;
+      
+      const da = a.deadlineDate ? new Date(a.deadlineDate) : new Date(8640000000000000);
+      const db = b.deadlineDate ? new Date(b.deadlineDate) : new Date(8640000000000000);
+      return da - db;
+    });
+
+    res.json(urgentList);
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }

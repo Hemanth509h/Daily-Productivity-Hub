@@ -14,7 +14,9 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
   const { data: summary } = useGetDashboardSummary();
-  const { data: todayTasks, isLoading: todayLoading } = useGetTodayTasks();
+  const { data: todayData, isLoading: todayLoading } = useGetTodayTasks();
+  const todayTasks = todayData?.tasks ?? [];
+  const isFallback = todayData?.isFallback ?? false;
 
   const { data: urgentTasks } = useQuery({
     queryKey: ['urgent-tasks'],
@@ -34,7 +36,9 @@ export default function Dashboard() {
           {greeting}{user?.name ? `, ${user.name.split(' ')[0]}` : ''}.
         </h1>
         <p className="text-slate-400 text-sm md:text-base font-medium max-w-xl leading-relaxed">
-          You have {todayTasks?.length ?? 0} tasks for today. Start with the urgent ones.
+          {isFallback 
+            ? "No tasks for today. Here is what's next:" 
+            : `You have ${todayTasks.length} tasks for today. Start with the urgent ones.`}
         </p>
       </header>
 
@@ -42,7 +46,9 @@ export default function Dashboard() {
         {/* Left Col: Today's Tasks */}
         <div className="lg:col-span-8 space-y-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">Today's Tasks</h3>
+            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
+              {isFallback ? "Upcoming Tasks" : "Today's Tasks"}
+            </h3>
             <Link href="/tasks" className="text-xs font-black text-primary uppercase tracking-widest hover:underline">View All Tasks</Link>
           </div>
           
