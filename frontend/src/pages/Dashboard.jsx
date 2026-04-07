@@ -50,7 +50,7 @@ export default function Dashboard() {
   const overdueCount = summary?.overdueCount ?? 0;
 
   return (
-    <div className="flex flex-col h-full space-y-8 md:space-y-12 pb-12">
+    <div className="flex flex-col space-y-8 md:space-y-12 pb-20 md:pb-12">
       {/* Header Section */}
       <header className="px-2">
         <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-2 md:mb-3">
@@ -115,7 +115,7 @@ export default function Dashboard() {
                 </div>
               ))
             ) : (
-              <div className="bg-white/50 border-2 border-dashed border-slate-200 rounded-[3rem] p-20 text-center flex flex-col items-center">
+              <div className="bg-white/50 border-2 border-dashed border-slate-200 rounded-[2rem] md:rounded-[3rem] p-10 md:p-20 text-center flex flex-col items-center">
                 <div className="w-16 h-16 rounded-[2rem] bg-slate-100 flex items-center justify-center mb-6 text-slate-300">
                   <IconPlus size={32} />
                 </div>

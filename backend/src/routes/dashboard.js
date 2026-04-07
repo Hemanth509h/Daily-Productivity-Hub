@@ -76,7 +76,7 @@ router.get("/today", requireAuth, async (req, res) => {
         { deadlineDate: { $gte: todayStart, $lte: todayEnd } },
         { deadlineDate: null }
       ],
-      completed: false
+      completed: { $ne: true }
     }).sort({ createdAt: -1 });
 
     // If no tasks for today, return the next 5 upcoming tasks
@@ -84,7 +84,7 @@ router.get("/today", requireAuth, async (req, res) => {
       const upcomingTasks = await Task.find({
         userId: req.user.userId,
         deadlineDate: { $gt: todayEnd },
-        completed: false
+        completed: { $ne: true }
       }).sort({ deadlineDate: 1 }).limit(5);
 
       return res.json({ tasks: upcomingTasks, isFallback: true });
@@ -101,7 +101,7 @@ router.get("/urgent", requireAuth, async (req, res) => {
     const now = new Date();
     const in72h = new Date(now.getTime() + 72 * 60 * 60 * 1000);
 
-    const allPending = await Task.find({ userId: req.user.userId, completed: false });
+    const allPending = await Task.find({ userId: req.user.userId, completed: { $ne: true } });
 
     // Include all overdue tasks
     const overdue = allPending.filter(t => 
