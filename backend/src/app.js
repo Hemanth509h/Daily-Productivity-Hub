@@ -32,7 +32,18 @@ app.use("/api/dashboard", dashboardRouter);
 app.use("/api/habits", habitsRouter);
 app.use("/api/ai", aiRouter);
 
-// Health check
+// System Status Check
+app.get("/api/status", (req, res) => {
+  res.json({
+    active: true,
+    status: "online",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || "development"
+  });
+});
+
+// Health check (deprecated, use /api/status)
 app.get("/health", (req, res) => res.json({ status: "ok", uptime: process.uptime() }));
 
 // Error handling middleware
