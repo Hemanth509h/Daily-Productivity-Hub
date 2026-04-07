@@ -144,7 +144,7 @@ export default function Tasks() {
         </div>
 
         {/* Task List Content */}
-        <div className="space-y-4 min-h-[400px]">
+        <div className="space-y-4 max-h-[400px] overflow-y-auto sidebar-scroll pr-2  md:min-h-[500px] ">
           {isLoading ? (
             <div className="animate-pulse space-y-4">
               {[1,2,3].map(i => <div key={i} className="h-24 bg-white rounded-[2rem] border border-slate-100" />)}

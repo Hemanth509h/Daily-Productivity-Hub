@@ -66,30 +66,31 @@ export default function Dashboard() {
   const overdueCount = summary?.overdueCount ?? 0;
 
   return (
-    <div className="flex flex-col space-y-6 md:space-y-12 pb-8 md:pb-12">
+    <div className="flex flex-col space-y-4 md:space-y-6 pb-8 md:pb-12">
       {/* Header Section */}
       <header className="px-2">
-        <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-2 md:mb-3">
+        <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-[1.2] mb-1 md:mb-2">
           {greeting}{user?.lastName ? `, ${user.lastName}` : ''}.
         </h1>
-        <p className="text-slate-400 text-sm md:text-base font-medium max-w-xl leading-relaxed">
+        <p className="text-slate-400 text-xs md:text-sm font-medium max-w-xl leading-relaxed">
           {isFallback 
             ? "No tasks for today. Here is what's next:" 
             : `You have ${todayTasks.length} tasks for today. Start with the urgent ones.`}
         </p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
         {/* Left Col: Today's Tasks */}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
-              {isFallback ? "Upcoming Tasks" : "Today's Tasks"}
-            </h3>
-            <Link href="/tasks" className="text-xs font-black text-primary uppercase tracking-widest hover:underline">View All Tasks</Link>
-          </div>
-          
-          <div className="space-y-4 max-h-[200px] overflow-y-auto sidebar-scroll pr-2">
+        <div className="lg:col-span-8">
+          <div className="bg-slate-50/50 rounded-2xl md:rounded-3xl p-4 md:p-6 border border-slate-200/50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base md:text-lg font-extrabold text-slate-900 tracking-tight">
+                {isFallback ? "Upcoming Tasks" : "Today's Tasks"}
+              </h3>
+              <Link href="/tasks" className="text-[10px] md:text-xs font-black text-primary uppercase tracking-widest hover:underline">View All Tasks</Link>
+            </div>
+            
+            <div className="space-y-2.5 max-h-[225px] overflow-y-auto sidebar-scroll pr-2 md:max-h-[470px]">
             {todayLoading ? (
               <div className="animate-pulse space-y-4">
                 {[1,2,3].map(i => <div key={i} className="h-24 bg-white rounded-[2rem] border" />)}
@@ -139,19 +140,20 @@ export default function Dashboard() {
                 <p className="text-sm text-slate-400">Time to plan your next tasks.</p>
               </div>
             )}
+            </div>
           </div>
         </div>
 
         {/* Right Col: Urgent & Stats */}
-        <div className="lg:col-span-4 space-y-10">
+        <div className="lg:col-span-4 space-y-4">
           {/* Urgent Tasks Sidebar */}
-          <div className="bg-slate-50/50 rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 border border-slate-200/50">
-            <div className="flex items-center gap-2 mb-8">
+          <div className="bg-slate-50/50 rounded-2xl md:rounded-3xl p-4 md:p-6 border border-slate-200/50">
+            <div className="flex items-center gap-2 mb-4">
               <div className="w-1.5 h-6 bg-rose-500 rounded-full" />
-              <h3 className="text-lg font-black text-slate-900 tracking-tight">Urgent Tasks</h3>
+              <h3 className="text-sm md:text-base font-black text-slate-900 tracking-tight">Urgent Tasks</h3>
             </div>
             
-            <div className="space-y-4 max-h-[200px] overflow-y-auto sidebar-scroll pr-2">
+            <div className="space-y-2.5 max-h-[225px] overflow-y-auto sidebar-scroll pr-2 md:max-h-[300px]">
               {Array.isArray(urgentTasks) && urgentTasks.length > 0 ? (
                 urgentTasks.map(task => {
                   const timeLeft = task.deadlineDate ? getTimeLeft(task.deadlineDate) : null;
@@ -179,14 +181,14 @@ export default function Dashboard() {
           </div>
 
           {/* Weekly Performance Widget */}
-          <div className="bg-[#0f172a] rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 text-white relative overflow-hidden shadow-2xl shadow-slate-300">
+          <div className="bg-[#0f172a] rounded-2xl md:rounded-3xl p-4 md:p-6 text-white relative overflow-hidden shadow-2xl shadow-slate-300">
             <div className="relative z-10">
-              <div className="mb-8">
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 block">Performance</span>
-                <h3 className="text-2xl font-black mb-1">Completion Rate</h3>
+              <div className="mb-5">
+                <span className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1.5 block">Performance</span>
+                <h3 className="text-xl md:text-2xl font-black mb-1">Completion Rate</h3>
               </div>
               
-              <div className="flex items-center justify-between gap-2 mb-8 md:mb-10">
+              <div className="flex items-center justify-between gap-2 mb-0">
                 <div className="flex items-center gap-4 md:gap-6">
                   <div className="space-y-1">
                     <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/30">Completed</span>
