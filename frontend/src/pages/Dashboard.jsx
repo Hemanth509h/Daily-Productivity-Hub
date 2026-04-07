@@ -140,20 +140,20 @@ export default function Dashboard() {
                 <h3 className="text-2xl font-black mb-1">Completion Rate</h3>
               </div>
               
-              <div className="flex items-center justify-between mb-10">
-                <div className="flex items-center gap-6">
+              <div className="flex items-center justify-between gap-2 mb-8 md:mb-10">
+                <div className="flex items-center gap-4 md:gap-6">
                   <div className="space-y-1">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Completed</span>
-                    <div className="text-3xl font-black">{completedTotal}</div>
+                    <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/30">Completed</span>
+                    <div className="text-2xl md:text-3xl font-black">{completedTotal}</div>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white/30">Overdue</span>
-                    <div className="text-3xl font-black text-rose-500">{overdueCount}</div>
+                    <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/30">Overdue</span>
+                    <div className="text-2xl md:text-3xl font-black text-rose-500">{overdueCount}</div>
                   </div>
                 </div>
-                <div className="relative w-16 h-16">
+                <div className="relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0">
                   <div className="absolute inset-0 rounded-full border-4 border-white/5" />
-                  <div className="absolute inset-0 flex items-center justify-center font-bold text-xs">{progress}%</div>
+                  <div className="absolute inset-0 flex items-center justify-center font-bold text-[10px] md:text-xs">{progress}%</div>
                 </div>
               </div>
             </div>
