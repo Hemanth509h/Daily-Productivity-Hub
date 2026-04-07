@@ -54,7 +54,7 @@ export default function Dashboard() {
       {/* Header Section */}
       <header className="px-2">
         <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1] mb-2 md:mb-3">
-          {greeting}{user?.name ? `, ${user.name.split(' ')[0]}` : ''}.
+          {greeting}{user?.lastName ? `, ${user.lastName}` : ''}.
         </h1>
         <p className="text-slate-400 text-sm md:text-base font-medium max-w-xl leading-relaxed">
           {isFallback 

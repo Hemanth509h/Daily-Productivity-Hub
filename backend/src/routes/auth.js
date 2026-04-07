@@ -12,17 +12,17 @@ router.post("/register", async (req, res) => {
     const parsed = RegisterBody.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
 
-    const { name, email, password } = parsed.data;
+    const { firstName, lastName, email, password } = parsed.data;
     const existing = await User.findOne({ email });
     if (existing) return res.status(409).json({ error: "Email already in use" });
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const user = await User.create({ name, email, password: hashedPassword });
+    const user = await User.create({ firstName, lastName, email, password: hashedPassword });
 
     const accessToken = signAccessToken({ userId: user.id, email: user.email });
     const refreshToken = signRefreshToken({ userId: user.id });
 
-    res.status(201).json({ accessToken, refreshToken, user: { id: user.id, name: user.name, email: user.email } });
+    res.status(201).json({ accessToken, refreshToken, user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email } });
   } catch (err) {
     logger.error(err, "Registration error");
     res.status(500).json({ error: "Internal server error" });
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
     const accessToken = signAccessToken({ userId: user.id, email: user.email });
     const refreshToken = signRefreshToken({ userId: user.id });
 
-    res.json({ accessToken, refreshToken, user: { id: user.id, name: user.name, email: user.email, points: user.points, level: user.level } });
+    res.json({ accessToken, refreshToken, user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, points: user.points, level: user.level } });
   } catch (err) {
     logger.error(err, "Login error");
     res.status(500).json({ error: "Internal server error" });
@@ -72,7 +72,7 @@ router.get("/me", requireAuth, async (req, res) => {
     const user = await User.findById(req.user.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
     
-    res.json({ id: user.id, name: user.name, email: user.email, points: user.points, level: user.level, streak: user.streak });
+    res.json({ id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, points: user.points, level: user.level, streak: user.streak });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -84,7 +84,8 @@ router.patch("/profile", requireAuth, async (req, res) => {
     if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
 
     const updates = {};
-    if (parsed.data.name) updates.name = parsed.data.name;
+    if (parsed.data.firstName) updates.firstName = parsed.data.firstName;
+    if (parsed.data.lastName) updates.lastName = parsed.data.lastName;
     if (parsed.data.email) updates.email = parsed.data.email;
     if (parsed.data.avatarUrl) updates.avatarUrl = parsed.data.avatarUrl;
     
@@ -96,8 +97,19 @@ router.patch("/profile", requireAuth, async (req, res) => {
     }
 
     const updated = await User.findByIdAndUpdate(req.user.userId, updates, { returnDocument: 'after' });
-    res.json({ id: updated.id, name: updated.name, email: updated.email });
+    res.json({ id: updated.id, firstName: updated.firstName, lastName: updated.lastName, email: updated.email });
   } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/account", requireAuth, async (req, res) => {
+  try {
+    const deleted = await User.findByIdAndDelete(req.user.userId);
+    if (!deleted) return res.status(404).json({ error: "User not found" });
+    res.json({ message: "Account deleted successfully" });
+  } catch (err) {
+    logger.error(err, "Account deletion error");
     res.status(500).json({ error: "Internal server error" });
   }
 });

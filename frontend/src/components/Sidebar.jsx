@@ -46,13 +46,13 @@ export default function Sidebar({ open, onClose }) {
     )}>
       {/* Brand Header */}
       <div className="px-6 py-6 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="p-2.5 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 shadow-lg shadow-purple-500/20 group-hover:shadow-xl group-hover:shadow-purple-500/30 transition-all">
             <MemorizeLogo size={24} />
           </div>
-          <div className="flex-1">
-            <div className="text-slate-900 font-bold text-sm tracking-tight leading-none mb-1">Memorize</div>
-            <div className="text-slate-400 font-black text-[9px] tracking-[0.2em] uppercase">Daily Focus</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-slate-900 font-bold text-sm tracking-tight leading-none mb-1 group-hover:text-indigo-600 transition-colors">Daily Hub</div>
+            <div className="text-slate-400 font-black text-[9px] tracking-[0.2em] uppercase">Productivity</div>
           </div>
           {/* Close button on mobile */}
           <button
@@ -63,7 +63,7 @@ export default function Sidebar({ open, onClose }) {
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
-        </div>
+        </Link>
       </div>
 
       {/* Main Nav */}

@@ -25,7 +25,7 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       "/api": {
-        target: "https://daily-productivity-hub.onrender.com",
+        target: "http://localhost:3001",
         changeOrigin: true
       }
     }

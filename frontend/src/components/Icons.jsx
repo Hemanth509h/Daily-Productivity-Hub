@@ -145,17 +145,57 @@ export const IconLogOut = ({ size = 16, ...p }) => (
   </svg>
 );
 
-export const MemorizeLogo = ({ size = 32 }) => (
-  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
-    <rect width="40" height="40" rx="10" fill="url(#logoGrad)" />
+export const MemorizeLogo = ({ size = 32, animated = false, className = "" }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 40 40" 
+    fill="none"
+    className={className}
+  >
+    {/* Background gradient */}
     <defs>
-      <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#22C55E" />
-        <stop offset="1" stopColor="#16A34A" />
+      <linearGradient id="logoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#6366F1" />
+        <stop offset="100%" stopColor="#8B5CF6" />
+      </linearGradient>
+      <linearGradient id="logoAccent" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#FCD34D" />
+        <stop offset="100%" stopColor="#FBBF24" />
       </linearGradient>
     </defs>
-    <path d="M20 8C15 8 10 13 10 18c0 3 1.5 5.5 4 7l6 5 6-5c2.5-1.5 4-4 4-7 0-5-5-10-10-10z" fill="white" fillOpacity="0.9"/>
-    <circle cx="20" cy="18" r="3" fill="#16A34A"/>
-    <path d="M20 15v6M17 18h6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+    
+    {/* Main rounded square background */}
+    <rect width="40" height="40" rx="8" fill="url(#logoBg)" />
+    
+    {/* Calendar grid pattern (task-like boxes) */}
+    {/* Top left box */}
+    <rect x="6" y="6" width="11" height="11" rx="2" fill="white" opacity="0.15" />
+    {/* Top right box */}
+    <rect x="23" y="6" width="11" height="11" rx="2" fill="url(#logoAccent)" />
+    
+    {/* Bottom left box */}
+    <rect x="6" y="23" width="11" height="11" rx="2" fill="white" opacity="0.2" />
+    {/* Bottom right box with checkmark */}
+    <rect x="23" y="23" width="11" height="11" rx="2" fill="white" opacity="0.25" />
+    
+    {/* Checkmark in bottom right */}
+    <g>
+      <path 
+        d="M28 30L31 33L36 27" 
+        stroke="url(#logoAccent)" 
+        strokeWidth="2.5" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </g>
+    
+    {/* Subtle accent line */}
+    <line x1="6" y1="18" x2="34" y2="18" stroke="white" strokeWidth="0.5" opacity="0.15" />
   </svg>
+);
+
+export const AppLogo = ({ size = 32, animated = false, className = "" }) => (
+  <MemorizeLogo size={size} animated={animated} className={className} />
 );

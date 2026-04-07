@@ -15,7 +15,7 @@ const features = [
 export default function Register() {
   const { login } = useAuth();
   const registerMutation = useRegister();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [, navigate] = useLocation();
   const { toast } = useToast();
@@ -45,10 +45,12 @@ export default function Register() {
 
         <div className="relative z-10 flex flex-col h-full p-10">
           <div className="flex items-center gap-3">
-            <MemorizeLogo size={40} />
+            <div className="p-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/15">
+              <MemorizeLogo size={36} />
+            </div>
             <div>
-              <div className="text-white font-bold text-base tracking-tight">Memorize</div>
-              <div className="text-white/40 text-[10px] font-semibold tracking-[0.2em] uppercase">Memory Hub</div>
+              <div className="text-white font-bold text-base tracking-tight">Daily Hub</div>
+              <div className="text-white/50 text-[10px] font-semibold tracking-[0.2em] uppercase">Stay Focused</div>
             </div>
           </div>
 
@@ -89,16 +91,22 @@ export default function Register() {
       {/* Right panel */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
+          {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <MemorizeLogo size={32} />
-            <span className="font-bold text-foreground">Memorize</span>
+            <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 shadow-lg shadow-purple-500/20">
+              <MemorizeLogo size={28} />
+            </div>
+            <div>
+              <div className="font-bold text-foreground text-sm">Daily Hub</div>
+              <div className="text-foreground/50 text-[10px] font-semibold">Stay Productive</div>
+            </div>
           </div>
 
           <div className="bg-white rounded-2xl p-8"
             style={{ boxShadow: '0 4px 32px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)', border: '1px solid hsl(213,25%,90%)' }}>
             <div className="mb-7">
               <h2 className="text-[1.6rem] font-bold text-foreground tracking-tight">Create account</h2>
-              <p className="text-muted-foreground text-sm mt-1">Join Sanctuary today — it's free</p>
+              <p className="text-muted-foreground text-sm mt-1">Join Daily Hub today — it's free</p>
             </div>
 
             {error && (
@@ -109,15 +117,27 @@ export default function Register() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Full Name</label>
-                <input
-                  type="text" value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  required autoComplete="name"
-                  placeholder="Alex Rivera"
-                  className="w-full px-4 py-3 border border-border rounded-xl text-[13.5px] outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">First Name</label>
+                  <input
+                    type="text" value={form.firstName}
+                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                    required autoComplete="given-name"
+                    placeholder="John"
+                    className="w-full px-4 py-3 border border-border rounded-xl text-[13.5px] outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Last Name</label>
+                  <input
+                    type="text" value={form.lastName}
+                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                    required autoComplete="family-name"
+                    placeholder="Doe"
+                    className="w-full px-4 py-3 border border-border rounded-xl text-[13.5px] outline-none transition-all focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-[11px] font-bold text-foreground/60 uppercase tracking-wider mb-1.5">Email Address</label>

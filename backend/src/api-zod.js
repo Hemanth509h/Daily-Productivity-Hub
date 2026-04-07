@@ -1,7 +1,8 @@
 import * as z from "zod";
 
 export const RegisterBody = z.object({
-  name: z.string().min(2),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(6),
 });
@@ -12,7 +13,8 @@ export const LoginBody = z.object({
 });
 
 export const UpdateProfileBody = z.object({
-  name: z.string().min(2).optional(),
+  firstName: z.string().min(1).optional(),
+  lastName: z.string().min(1).optional(),
   email: z.string().email().optional(),
   currentPassword: z.string().optional(),
   newPassword: z.string().min(6).optional(),

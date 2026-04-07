@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { useLocation } from 'wouter';
 import { IconCheck } from '../components/Icons.jsx';
 
 function Section({ title, children }) {
@@ -33,10 +34,11 @@ function Input({ className = '', ...props }) {
 }
 
 export default function Settings() {
-  const { user, login, token } = useAuth();
+  const { user, login, token, logout } = useAuth();
+  const [, navigate] = useLocation();
 
   // Profile section
-  const [profile, setProfile] = useState({ name: '', email: '' });
+  const [profile, setProfile] = useState({ firstName: '', lastName: '', email: '' });
   const [profileStatus, setProfileStatus] = useState(null); // null | 'saving' | 'saved' | 'error'
   const [profileError, setProfileError] = useState('');
 
@@ -44,6 +46,10 @@ export default function Settings() {
   const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
   const [passwordStatus, setPasswordStatus] = useState(null);
   const [passwordError, setPasswordError] = useState('');
+
+  // Delete account section
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Preferences (local only)
   const [focusDuration, setFocusDuration] = useState('25');
@@ -55,7 +61,7 @@ export default function Settings() {
   // Init profile from user
   useEffect(() => {
     if (user) {
-      setProfile({ name: user.name || '', email: user.email || '' });
+      setProfile({ firstName: user.firstName || '', lastName: user.lastName || '', email: user.email || '' });
     }
   }, [user]);
 
@@ -142,6 +148,27 @@ export default function Settings() {
     if (saved) setFocusDuration(saved);
   }, []);
 
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    try {
+      const res = await fetch('/api/auth/account', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to delete account');
+      }
+      logout();
+      navigate('/login');
+    } catch (err) {
+      alert(err.message || 'Failed to delete account');
+      setDeleteLoading(false);
+    }
+  };
+
   const StatusBanner = ({ status, error, successMsg = 'Changes saved!' }) => {
     if (!status) return null;
     if (status === 'saving') return (
@@ -192,13 +219,22 @@ export default function Settings() {
       {/* Profile form */}
       <Section title="Profile Information">
         <form onSubmit={saveProfile} className="space-y-4">
-          <Field label="Full Name">
-            <Input
-              type="text" value={profile.name} required
-              onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-              placeholder="Your full name"
-            />
-          </Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="First Name">
+              <Input
+                type="text" value={profile.firstName} required
+                onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                placeholder="John"
+              />
+            </Field>
+            <Field label="Last Name">
+              <Input
+                type="text" value={profile.lastName} required
+                onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                placeholder="Doe"
+              />
+            </Field>
+          </div>
           <Field label="Email Address">
             <Input
               type="email" value={profile.email} required
@@ -346,20 +382,68 @@ export default function Settings() {
         <div className="px-5 py-4 border-b border-red-100">
           <h2 className="font-bold text-[14px] text-red-600">Danger Zone</h2>
         </div>
-        <div className="p-5">
-          <p className="text-[13px] text-muted-foreground mb-4">Sign out of your account on this device.</p>
-          <button
-            onClick={() => {
-              localStorage.removeItem('sanctuary_token');
-              window.location.href = '/login';
-            }}
-            className="px-5 py-2.5 rounded-xl border text-[13px] font-bold text-red-600 hover:bg-red-50 transition-colors"
-            style={{ borderColor: '#FCA5A5' }}
-          >
-            Sign Out
-          </button>
+        <div className="p-5 space-y-3">
+          <div>
+            <p className="text-[13px] text-muted-foreground mb-3">Sign out of your account on this device.</p>
+            <button
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              className="px-5 py-2.5 rounded-xl border text-[13px] font-bold text-red-600 hover:bg-red-50 transition-colors"
+              style={{ borderColor: '#FCA5A5' }}
+            >
+              Sign Out
+            </button>
+          </div>
+
+          <div className="border-t border-red-100 pt-4">
+            <p className="text-[13px] text-muted-foreground mb-3">Permanently delete your account and all associated data. This action cannot be undone.</p>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="px-5 py-2.5 rounded-xl bg-red-50 text-[13px] font-bold text-red-600 hover:bg-red-100 transition-colors border border-red-200"
+            >
+              Delete Account Permanently
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4"
+            style={{ boxShadow: '0 20px 25px rgba(0,0,0,0.15)' }}>
+            <h3 className="text-lg font-bold text-foreground mb-2">Delete Account?</h3>
+            <p className="text-[13px] text-muted-foreground mb-6 leading-relaxed">
+              This will permanently delete your account and all associated data including tasks, habits, and settings. This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deleteLoading}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-border text-[13px] font-bold text-foreground hover:bg-muted transition-colors disabled:opacity-60"
+              >
+                Keep Account
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-[13px] font-bold text-white hover:bg-red-700 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                {deleteLoading ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete Permanently'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

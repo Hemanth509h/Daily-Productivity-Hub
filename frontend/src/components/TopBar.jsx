@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { Link } from 'wouter';
-import { IconSearch, IconBell, IconPlus } from './Icons.jsx';
+import { IconSearch, IconBell, IconPlus, MemorizeLogo } from './Icons.jsx';
 import QuickAddModal from './QuickAddModal.jsx';
 
 export default function TopBar({ onMenuClick }) {
@@ -13,8 +13,13 @@ export default function TopBar({ onMenuClick }) {
   return (
     <>
       <header className="h-14 md:h-16 flex items-center px-3 md:px-8 gap-2 md:gap-6 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 flex-shrink-0 sticky top-0 z-30">
-        {/* Hamburger — mobile only */}
-
+        {/* Logo - visible on mobile */}
+        <Link href="/" className="flex items-center gap-2 md:hidden flex-shrink-0 group">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500">
+            <MemorizeLogo size={20} />
+          </div>
+          <span className="font-bold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors">Daily</span>
+        </Link>
 
         {/* Search */}
         <div className="flex-1 max-w-xl relative group">

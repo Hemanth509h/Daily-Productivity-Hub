@@ -11,18 +11,18 @@ router.post("/auth/register", async (req, res) => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { name, email, password } = parsed.data;
+  const { firstName, lastName, email, password } = parsed.data;
   const existing = await db.select().from(usersTable).where(eq(usersTable.email, email));
   if (existing.length > 0) {
     res.status(409).json({ error: "Email already in use" });
     return;
   }
   const hashed = await bcrypt.hash(password, 10);
-  const [user] = await db.insert(usersTable).values({ name, email, password: hashed }).returning();
+  const [user] = await db.insert(usersTable).values({ firstName, lastName, email, password: hashed }).returning();
   const token = signToken({ userId: user.id, email: user.email });
   res.status(201).json({
     token,
-    user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() }
+    user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, createdAt: user.createdAt.toISOString() }
   });
 });
 router.post("/auth/login", async (req, res) => {
@@ -45,7 +45,7 @@ router.post("/auth/login", async (req, res) => {
   const token = signToken({ userId: user.id, email: user.email });
   res.json({
     token,
-    user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() }
+    user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, createdAt: user.createdAt.toISOString() }
   });
 });
 router.get("/auth/me", requireAuth, async (req, res) => {
@@ -54,7 +54,7 @@ router.get("/auth/me", requireAuth, async (req, res) => {
     res.status(401).json({ error: "User not found" });
     return;
   }
-  res.json({ id: user.id, name: user.name, email: user.email, createdAt: user.createdAt.toISOString() });
+  res.json({ id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, createdAt: user.createdAt.toISOString() });
 });
 router.patch("/auth/profile", requireAuth, async (req, res) => {
   const { name, email, currentPassword, newPassword } = req.body;
@@ -99,6 +99,16 @@ router.patch("/auth/profile", requireAuth, async (req, res) => {
   const [updated] = await db.update(usersTable).set(updates).where(eq(usersTable.id, req.user.userId)).returning();
   res.json({ id: updated.id, name: updated.name, email: updated.email, createdAt: updated.createdAt.toISOString() });
 });
+
+router.delete("/auth/account", requireAuth, async (req, res) => {
+  try {
+    const result = await db.delete(usersTable).where(eq(usersTable.id, req.user.userId));
+    res.json({ message: "Account deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete account" });
+  }
+});
+
 var stdin_default = router;
 export {
   stdin_default as default
