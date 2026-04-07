@@ -51,8 +51,8 @@ export default function Sidebar({ open, onClose }) {
             <MemorizeLogo size={24} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-slate-900 font-bold text-sm tracking-tight leading-none mb-1 group-hover:text-indigo-600 transition-colors">Daily Hub</div>
-            <div className="text-slate-400 font-black text-[9px] tracking-[0.2em] uppercase">Productivity</div>
+            <div className="text-slate-900 font-bold text-sm tracking-tight leading-none mb-1 group-hover:text-indigo-600 transition-colors">Memorizes</div>
+            <div className="text-slate-400 font-black text-[9px] tracking-[0.2em] uppercase">Smart Memory</div>
           </div>
           {/* Close button on mobile */}
           <button

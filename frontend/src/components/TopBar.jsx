@@ -18,7 +18,7 @@ export default function TopBar({ onMenuClick }) {
           <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500">
             <MemorizeLogo size={20} />
           </div>
-          <span className="font-bold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors">Daily</span>
+          <span className="font-bold text-sm text-slate-900 group-hover:text-indigo-600 transition-colors">Memorizes</span>
         </Link>
 
         {/* Search */}

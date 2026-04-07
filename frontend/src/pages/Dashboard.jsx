@@ -5,6 +5,7 @@ import {
   useGetDashboardSummary,
   useGetTodayTasks,
   useToggleTaskComplete,
+  useGetTasks,
 } from '@/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { customFetch } from '@/api-client-react/custom-fetch';
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const [, navigate] = useLocation();
   const { data: summary } = useGetDashboardSummary();
   const { data: todayData, isLoading: todayLoading } = useGetTodayTasks();
+  const { data: allTasks = [] } = useGetTasks();
   const todayTasks = todayData?.tasks ?? [];
   const isFallback = todayData?.isFallback ?? false;
 
@@ -24,6 +26,11 @@ export default function Dashboard() {
     queryKey: ['urgent-tasks'],
     queryFn: () => customFetch('/api/dashboard/urgent')
   });
+
+  // Calculate total tasks left to complete
+  const totalTasks = Array.isArray(allTasks) ? allTasks.length : 0;
+  const completedTasks = Array.isArray(allTasks) ? allTasks.filter(t => t.completed).length : 0;
+  const tasksLeftToComplete = totalTasks - completedTasks;
 
   const queryClient = useQueryClient();
   const toggleMutation = useToggleTaskComplete({
@@ -73,7 +80,7 @@ export default function Dashboard() {
             <Link href="/tasks" className="text-xs font-black text-primary uppercase tracking-widest hover:underline">View All Tasks</Link>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[200px] overflow-y-auto sidebar-scroll pr-2">
             {todayLoading ? (
               <div className="animate-pulse space-y-4">
                 {[1,2,3].map(i => <div key={i} className="h-24 bg-white rounded-[2rem] border" />)}
@@ -135,7 +142,7 @@ export default function Dashboard() {
               <h3 className="text-lg font-black text-slate-900 tracking-tight">Urgent Tasks</h3>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[200px] overflow-y-auto sidebar-scroll pr-2">
               {Array.isArray(urgentTasks) && urgentTasks.length > 0 ? (
                 urgentTasks.map(task => {
                   const timeLeft = task.deadlineDate ? getTimeLeft(task.deadlineDate) : null;
@@ -175,6 +182,10 @@ export default function Dashboard() {
                   <div className="space-y-1">
                     <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/30">Completed</span>
                     <div className="text-2xl md:text-3xl font-black">{completedTotal}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/30">Left</span>
+                    <div className="text-2xl md:text-3xl font-black text-amber-500">{tasksLeftToComplete}</div>
                   </div>
                   <div className="space-y-1">
                     <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white/30">Overdue</span>

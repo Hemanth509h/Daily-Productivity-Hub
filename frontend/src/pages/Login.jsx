@@ -58,8 +58,8 @@ export default function Login() {
               <MemorizeLogo size={36} />
             </div>
             <div>
-              <div className="text-white font-bold text-base tracking-tight">Daily Hub</div>
-              <div className="text-white/50 text-[10px] font-semibold tracking-[0.2em] uppercase">Stay Focused</div>
+              <div className="text-white font-bold text-base tracking-tight">Memorizes</div>
+              <div className="text-white/50 text-[10px] font-semibold tracking-[0.2em] uppercase">Remember Always</div>
             </div>
           </div>
 
@@ -114,8 +114,8 @@ export default function Login() {
               <MemorizeLogo size={28} />
             </div>
             <div>
-              <div className="font-bold text-foreground text-sm">Daily Hub</div>
-              <div className="text-foreground/50 text-[10px] font-semibold">Stay Productive</div>
+              <div className="font-bold text-foreground text-sm">Memorizes</div>
+              <div className="text-foreground/50 text-[10px] font-semibold">Never Forget</div>
             </div>
           </div>
 

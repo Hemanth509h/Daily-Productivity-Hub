@@ -49,8 +49,8 @@ export default function Register() {
               <MemorizeLogo size={36} />
             </div>
             <div>
-              <div className="text-white font-bold text-base tracking-tight">Daily Hub</div>
-              <div className="text-white/50 text-[10px] font-semibold tracking-[0.2em] uppercase">Stay Focused</div>
+              <div className="text-white font-bold text-base tracking-tight">Memorizes</div>
+              <div className="text-white/50 text-[10px] font-semibold tracking-[0.2em] uppercase">Remember Always</div>
             </div>
           </div>
 
@@ -97,8 +97,8 @@ export default function Register() {
               <MemorizeLogo size={28} />
             </div>
             <div>
-              <div className="font-bold text-foreground text-sm">Daily Hub</div>
-              <div className="text-foreground/50 text-[10px] font-semibold">Stay Productive</div>
+              <div className="font-bold text-foreground text-sm">Memorizes</div>
+              <div className="text-foreground/50 text-[10px] font-semibold">Never Forget</div>
             </div>
           </div>
 
@@ -106,7 +106,7 @@ export default function Register() {
             style={{ boxShadow: '0 4px 32px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)', border: '1px solid hsl(213,25%,90%)' }}>
             <div className="mb-7">
               <h2 className="text-[1.6rem] font-bold text-foreground tracking-tight">Create account</h2>
-              <p className="text-muted-foreground text-sm mt-1">Join Daily Hub today — it's free</p>
+              <p className="text-muted-foreground text-sm mt-1">Join Memorizes today — it's free</p>
             </div>
 
             {error && (

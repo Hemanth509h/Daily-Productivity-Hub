@@ -1,11 +1,11 @@
 {
-  "name": "Memorize",
-  "short_name": "Memorize",
+  "name": "Memorizes",
+  "short_name": "Memorizes",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
-  "theme_color": "#10b981",
-  "description": "AI-driven memory and productivity ecosystem for deep focus and consistency.",
+  "theme_color": "#6366F1",
+  "description": "Smart memory and task management system. Remember always with Memorizes.",
   "icons": [
     {
       "src": "/favicon.svg",
