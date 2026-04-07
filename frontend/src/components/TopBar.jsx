@@ -13,22 +13,60 @@ export default function TopBar({ onMenuClick }) {
   const [notificationEnabled, setNotificationEnabled] = useState(false);
 
   useEffect(() => {
-    // Check if browser supports notifications
-    if ('Notification' in window) {
-      setNotificationEnabled(Notification.permission === 'granted');
-    } else {
-      console.warn('Browser does not support notifications');
-    }
+    // Check if browser supports notifications and update state
+    const updateNotificationState = () => {
+      if ('Notification' in window) {
+        const isGranted = Notification.permission === 'granted';
+        setNotificationEnabled(isGranted);
+      }
+    };
+    
+    updateNotificationState();
   }, []);
 
-  const handleNotificationToggle = async () => {
+  const handleNotificationToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     try {
-      console.log('Current permission:', Notification.permission);
-      const granted = await requestNotificationPermission();
-      console.log('Permission granted:', granted);
-      setNotificationEnabled(granted);
+      if (!('Notification' in window)) {
+        alert('Your browser does not support notifications');
+        return;
+      }
+
+      // If already granted, just toggle off (visual only)
+      if (Notification.permission === 'granted') {
+        setNotificationEnabled(!notificationEnabled);
+        return;
+      }
+
+      // If permission is default, request it
+      if (Notification.permission === 'default') {
+        const permission = await Notification.requestPermission();
+        const granted = permission === 'granted';
+        setNotificationEnabled(granted);
+        
+        if (granted) {
+          // Send a test notification
+          try {
+            new Notification('Notifications Enabled! 🎉', {
+              body: 'You will now receive task reminders',
+              icon: '/favicon.svg',
+            });
+          } catch (err) {
+            console.error('Error sending test notification:', err);
+          }
+        }
+        return;
+      }
+
+      // If already denied, show message
+      if (Notification.permission === 'denied') {
+        alert('Notifications are blocked. Please enable them in browser settings.');
+      }
     } catch (error) {
-      console.error('Error toggling notifications:', error);
+      console.error('Error handling notification toggle:', error);
+      alert('Error handling notifications');
     }
   };
 
