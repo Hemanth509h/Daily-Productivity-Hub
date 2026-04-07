@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Task } from "../db/index.js";
-import { CreateTaskBody, UpdateTaskBody, CreateSubtaskBody, ToggleSubtaskBody } from "../api-zod.js";
+import { CreateTaskBody, UpdateTaskBody, CreateSubtaskBody, ToggleSubtaskBody, ToggleTaskCompleteBody } from "../api-zod.js";
 import { requireAuth } from "../lib/auth.js";
 import { logger } from "../lib/logger.js";
 
@@ -159,6 +159,24 @@ router.patch("/:id/subtasks/:subtaskId", requireAuth, async (req, res) => {
     if (!task) return res.status(404).json({ error: "Task or subtask not found" });
     const updatedSubtask = task.subtasks.id(req.params.subtaskId);
     res.json(updatedSubtask);
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/:id/complete", requireAuth, async (req, res) => {
+  try {
+    const parsed = ToggleTaskCompleteBody.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
+
+    const task = await Task.findOne({ _id: req.params.id, userId: req.user.userId });
+    if (!task) return res.status(404).json({ error: "Task not found" });
+
+    task.completed = parsed.data.completed;
+    task.status = getTaskStatus(task);
+    
+    await task.save();
+    res.json(task);
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }

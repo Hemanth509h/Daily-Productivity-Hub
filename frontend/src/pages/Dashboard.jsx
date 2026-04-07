@@ -4,7 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import {
   useGetDashboardSummary,
   useGetTodayTasks,
+  useToggleTaskComplete,
 } from '@/api-client-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { customFetch } from '@/api-client-react/custom-fetch';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { getGreeting, getTimeLeft, cn } from '../lib/utils.js';
@@ -22,6 +24,25 @@ export default function Dashboard() {
     queryKey: ['urgent-tasks'],
     queryFn: () => customFetch('/api/dashboard/urgent')
   });
+
+  const queryClient = useQueryClient();
+  const toggleMutation = useToggleTaskComplete({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [['/api/dashboard/today']] });
+        queryClient.invalidateQueries({ queryKey: ['urgent-tasks'] });
+        queryClient.invalidateQueries({ queryKey: [['/api/dashboard/summary']] });
+      }
+    }
+  });
+
+  const handleToggleComplete = (e, task) => {
+    e.stopPropagation();
+    toggleMutation.mutate({ 
+      id: task.id, 
+      data: { completed: !task.completed } 
+    });
+  };
 
   const greeting = getGreeting();
   const progress = summary?.completionRate ?? 0;
@@ -64,8 +85,11 @@ export default function Dashboard() {
                   onClick={() => navigate(`/tasks/${task.id}`)}
                   className="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-slate-100 flex items-center gap-4 md:gap-6 hover:shadow-xl hover:shadow-slate-200/50 transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-4"
                 >
-                  <div className="w-12 h-12 rounded-full border-2 border-slate-100 flex items-center justify-center text-slate-300 group-hover:border-primary group-hover:text-primary transition-all">
-                    {task.completed ? <IconCheck size={24} strokeWidth={3} /> : <div className="w-4 h-4 rounded-full bg-slate-50 border border-slate-100" />}
+                  <div 
+                    onClick={(e) => handleToggleComplete(e, task)}
+                    className="w-12 h-12 rounded-full border-2 border-slate-100 flex items-center justify-center text-slate-300 hover:border-primary hover:text-primary transition-all z-10"
+                  >
+                    {task.completed ? <IconCheck size={24} strokeWidth={3} className="text-primary" /> : <div className="w-4 h-4 rounded-full bg-slate-50 border border-slate-100" />}
                   </div>
                   <div className="flex-1">
                     <h4 className={cn("text-lg font-bold text-slate-900 group-hover:text-primary transition-colors mb-1.5", task.completed && "line-through text-slate-400")}>

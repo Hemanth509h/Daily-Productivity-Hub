@@ -55,6 +55,10 @@ export const ToggleSubtaskBody = z.object({
   completed: z.boolean(),
 });
 
+export const ToggleTaskCompleteBody = z.object({
+  completed: z.boolean(),
+});
+
 export const PomodoroSessionBody = z.object({
   taskId: z.string().optional(),
   duration: z.number().int().min(1),
