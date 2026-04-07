@@ -18,11 +18,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { setBaseUrl, setAuthTokenGetter } from "@/api-client-react";
 
 
-// Set API base URL - dev uses localhost:3001, prod uses same origin
-const apiBaseUrl = import.meta.env.VITE_API_URL || (
-  import.meta.env.DEV ? 'http://localhost:3001' : window.location.origin
-);
-setBaseUrl(apiBaseUrl);
+
 
 setAuthTokenGetter(async () => localStorage.getItem("sanctuary_access_token"));
 
@@ -30,14 +26,14 @@ const queryClient = new QueryClient();
 
 function Router() {
   const { user, loading } = useAuth();
-  
+
   if (loading) return <div className="h-screen w-screen flex items-center justify-center bg-slate-50"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" /></div>;
 
   return (
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
-      
+
       {/* Protected Routes */}
       <Route>
         {!user ? (
