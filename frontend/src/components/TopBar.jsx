@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { Link } from 'wouter';
 import { IconSearch, IconBell, IconPlus, MemorizeLogo } from './Icons.jsx';
+import { requestNotificationPermission } from '../lib/notifications.js';
 import QuickAddModal from './QuickAddModal.jsx';
 
 export default function TopBar({ onMenuClick }) {
@@ -9,6 +10,27 @@ export default function TopBar({ onMenuClick }) {
   const [search, setSearch] = useState('');
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
+
+  useEffect(() => {
+    // Check if browser supports notifications
+    if ('Notification' in window) {
+      setNotificationEnabled(Notification.permission === 'granted');
+    } else {
+      console.warn('Browser does not support notifications');
+    }
+  }, []);
+
+  const handleNotificationToggle = async () => {
+    try {
+      console.log('Current permission:', Notification.permission);
+      const granted = await requestNotificationPermission();
+      console.log('Permission granted:', granted);
+      setNotificationEnabled(granted);
+    } catch (error) {
+      console.error('Error toggling notifications:', error);
+    }
+  };
 
   return (
     <>
@@ -36,25 +58,29 @@ export default function TopBar({ onMenuClick }) {
           />
         </div>
 
-        <div className="flex items-center gap-2 md:gap-4 ml-auto">
+        {/* Button Group */}
+        <div className="flex items-center gap-2">
           {/* Quick Add */}
           <button
             onClick={() => setShowQuickAdd(true)}
-            className="flex items-center gap-2 px-3 md:px-5 py-2.5 rounded-xl text-[11px] font-black text-white transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-95 bg-primary uppercase tracking-widest"
+            className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-bold text-[13px] transition-all hover:shadow-lg hover:scale-105 active:scale-95"
           >
-            <IconPlus size={14} strokeWidth={3} />
+            <IconPlus size={16} strokeWidth={3} />
             <span className="hidden md:inline">Quick Add</span>
           </button>
 
           {/* Bell */}
           <button
-            onClick={() => {
-              if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
-            }}
-            className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100/50 text-slate-400 hover:text-slate-900 transition-all hover:bg-slate-100"
+            onClick={handleNotificationToggle}
+            className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all ${
+              notificationEnabled 
+                ? 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100' 
+                : 'bg-slate-100/50 text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+            }`}
+            title={notificationEnabled ? 'Notifications enabled' : 'Enable notifications'}
           >
             <IconBell size={18} strokeWidth={2} />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white" />
+            <span className={`absolute top-2.5 right-2.5 w-2 h-2 rounded-full border border-white ${notificationEnabled ? 'bg-green-500' : 'bg-slate-300'}`} />
           </button>
 
           <div className="h-6 w-px bg-slate-200 mx-1" />

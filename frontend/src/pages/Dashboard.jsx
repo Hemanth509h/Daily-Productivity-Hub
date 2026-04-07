@@ -12,6 +12,8 @@ import { customFetch } from '@/api-client-react/custom-fetch';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { getGreeting, getTimeLeft, cn } from '../lib/utils.js';
 import { IconCheck, IconChevronRight, IconPlus, IconClock } from '../components/Icons.jsx';
+import { useTaskReminders } from '../hooks/useTaskReminders.js';
+import { clearReminderCache } from '../lib/notifications.js';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -32,6 +34,9 @@ export default function Dashboard() {
   const completedTasks = Array.isArray(allTasks) ? allTasks.filter(t => t.completed).length : 0;
   const tasksLeftToComplete = totalTasks - completedTasks;
 
+  // Start monitoring tasks for reminders
+  useTaskReminders(allTasks);
+
   const queryClient = useQueryClient();
   const toggleMutation = useToggleTaskComplete({
     mutation: {
@@ -45,6 +50,10 @@ export default function Dashboard() {
 
   const handleToggleComplete = (e, task) => {
     e.stopPropagation();
+    if (!task.completed) {
+      // When marking as complete, clear the reminder cache
+      clearReminderCache(task.id);
+    }
     toggleMutation.mutate({ 
       id: task.id, 
       data: { completed: !task.completed } 
