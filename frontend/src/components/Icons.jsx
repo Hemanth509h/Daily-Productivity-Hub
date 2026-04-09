@@ -147,7 +147,7 @@ export const IconLogOut = ({ size = 16, ...p }) => (
 
 export const MemorizeLogo = ({ size = 32, animated = false, className = "" }) => (
   <img
-    src="public/logo.png"
+    src="/logo.png"
     width={size}
     height={size}
     className={className}
