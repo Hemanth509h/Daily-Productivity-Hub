@@ -159,11 +159,7 @@ export default function Dashboard() {
                   const timeLeft = task.deadlineDate ? getTimeLeft(task.deadlineDate) : null;
                   const isOverdue = timeLeft === 'Overdue';
                   const color = isOverdue ? 'rose' : 'amber';
-                  const status = isOverdue
-                    ? 'Overdue'
-                    : timeLeft
-                    ? `Due in ${timeLeft}`
-                    : task.priority === 'high' ? 'High priority' : 'Urgent';
+                  const status = timeLeft || (task.priority === 'high' ? 'High priority' : 'Urgent');
                   return (
                     <UrgentItem
                       key={task.id}

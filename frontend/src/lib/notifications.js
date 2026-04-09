@@ -2,6 +2,8 @@
  * Notification Service - Handles browser notifications for task reminders
  */
 
+import { getTimeLeft } from './utils.js';
+
 let navigationCallback = null;
 
 // Register callback for notification clicks
@@ -38,8 +40,8 @@ export const sendNotification = (title, options = {}) => {
   if (Notification.permission === 'granted') {
     try {
       const notification = new Notification(title, {
-        icon: '/favicon.svg',
-        badge: '/favicon.svg',
+        icon: '/logo.png',
+        badge: '/logo.png',
         ...options,
       });
 
@@ -131,15 +133,29 @@ export const checkTaskReminders = (tasks = []) => {
   const now = new Date();
 
   tasks.forEach(task => {
-    if (!task.reminderTime) return;
+    if (task.completed) return;
 
-    const reminderTime = new Date(task.reminderTime);
-    const timeDiff = reminderTime - now;
+    if (task.reminderTime) {
+      const reminderTime = new Date(task.reminderTime);
+      const timeDiff = reminderTime - now;
 
-    // Check if reminder time is within the next 5 minutes and hasn't been notified yet
-    if (timeDiff > 0 && timeDiff <= 300000 && !localStorage.getItem(`reminder-${task.id}`)) {
-      sendTaskReminderNotification(task);
-      localStorage.setItem(`reminder-${task.id}`, 'notified');
+      // Check if reminder time is within the next 5 minutes and hasn't been notified yet
+      if (timeDiff > 0 && timeDiff <= 300000 && !localStorage.getItem(`reminder-${task.id}`)) {
+        sendTaskReminderNotification(task);
+        localStorage.setItem(`reminder-${task.id}`, 'notified');
+      }
+      return;
+    }
+
+    if (task.deadlineDate) {
+      const deadlineTime = new Date(task.deadlineDate);
+      const timeDiff = deadlineTime - now;
+
+      // Send a deadline notification for tasks due within 5 minutes if no reminder is configured
+      if (timeDiff > 0 && timeDiff <= 300000 && !localStorage.getItem(`deadline-${task.id}`)) {
+        sendDeadlineNotification(task, getTimeLeft(task.deadlineDate));
+        localStorage.setItem(`deadline-${task.id}`, 'notified');
+      }
     }
   });
 };

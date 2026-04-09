@@ -15,12 +15,35 @@ export function AuthProvider({ children }) {
     setAuthTokenGetter(() => accessToken);
   }, [accessToken]);
 
+  useEffect(() => {
+    if (!('serviceWorker' in navigator) || !accessToken) return;
+
+    const sendTokenToWorker = async () => {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        registration.active?.postMessage({ type: 'SET_AUTH_TOKEN', token: accessToken });
+      } catch (err) {
+        console.warn('Unable to sync auth token with service worker:', err);
+      }
+    };
+
+    sendTokenToWorker();
+  }, [accessToken]);
+
   const logout = useCallback(() => {
     localStorage.removeItem('sanctuary_access_token');
     localStorage.removeItem('sanctuary_refresh_token');
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.active?.postMessage({ type: 'CLEAR_AUTH_TOKEN' });
+      }).catch((err) => {
+        console.warn('Unable to clear auth token from service worker:', err);
+      });
+    }
   }, []);
 
   const refreshSession = useCallback(async () => {

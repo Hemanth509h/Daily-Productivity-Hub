@@ -44,7 +44,9 @@ function getTimeLeft(deadline) {
   if (!deadline) return null;
   const diff = new Date(deadline) - new Date();
   if (diff < 0) return 'Overdue';
-  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.ceil(diff / (1000 * 60));
+  if (minutes < 60) return `${minutes}m left`;
+  const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h left`;
   const days = Math.floor(hours / 24);
   return `${days}d left`;

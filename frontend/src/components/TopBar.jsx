@@ -51,7 +51,7 @@ export default function TopBar({ onMenuClick }) {
           try {
             new Notification('Notifications Enabled! 🎉', {
               body: 'You will now receive task reminders',
-              icon: '/favicon.svg',
+              icon: '/logo.png',
             });
           } catch (err) {
             console.error('Error sending test notification:', err);

@@ -2,8 +2,13 @@ import React from 'react';
 import Sidebar from './Sidebar.jsx';
 import TopBar from './TopBar.jsx';
 import BottomNav from './BottomNav.jsx';
+import { useGetTasks } from '@/api-client-react';
+import { useTaskReminders } from '../hooks/useTaskReminders.js';
 
 export default function Layout({ children }) {
+  const { data: tasks } = useGetTasks();
+  useTaskReminders(tasks);
+
   return (
     <div className="flex h-screen bg-background overflow-hidden relative">
       <Sidebar />

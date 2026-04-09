@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -45,6 +45,15 @@ export default function Tasks() {
     if (filters.search && !t.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
     return true;
   });
+
+  const sortedTasks = useMemo(() => {
+    return [...filteredTasks].sort((a, b) => {
+      const aDeadline = a.deadlineDate ? new Date(a.deadlineDate).getTime() : Number.MAX_SAFE_INTEGER;
+      const bDeadline = b.deadlineDate ? new Date(b.deadlineDate).getTime() : Number.MAX_SAFE_INTEGER;
+      if (aDeadline !== bDeadline) return aDeadline - bDeadline;
+      return a.title.localeCompare(b.title);
+    });
+  }, [filteredTasks]);
 
   return (
     <div className="flex h-full bg-slate-50/20">
@@ -149,10 +158,10 @@ export default function Tasks() {
             <div className="animate-pulse space-y-4">
               {[1,2,3].map(i => <div key={i} className="h-24 bg-white rounded-[2rem] border border-slate-100" />)}
             </div>
-          ) : filteredTasks.length === 0 ? (
+          ) : sortedTasks.length === 0 ? (
             <EmptyState onClick={() => setShowQuickAdd(true)} />
           ) : (
-            filteredTasks.map(task => (
+            sortedTasks.map(task => (
               <TaskCard 
                 key={task.id} 
                 task={task} 
@@ -286,8 +295,13 @@ const TaskCard = ({ task, onDelete, onToggle, onClick }) => (
         <h4 className={cn("text-base md:text-lg font-bold truncate group-hover:text-primary transition-colors", task.completed ? "text-slate-300 line-through" : "text-slate-800")}>
           {task.title}
         </h4>
-        <div className="flex items-center gap-3 mt-1.5">
+        <div className="flex flex-wrap items-center gap-3 mt-1.5">
           {task.category && <span className="text-[11px] font-bold text-slate-400 capitalize">{task.category}</span>}
+          {!task.completed && task.deadlineDate && (
+            <span className="text-[10px] font-black uppercase tracking-[0.05em] text-rose-500">
+              {getTimeLeft(task.deadlineDate)}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -329,7 +343,7 @@ const TaskCard = ({ task, onDelete, onToggle, onClick }) => (
     </div>
 
     {/* Mobile details */}
-    <div className="md:hidden flex items-center justify-between text-xs text-slate-400">
+    <div className="md:hidden flex flex-col gap-2 text-xs text-slate-400">
       <div className="flex items-center gap-4">
         {task.priority && (
           <span className={cn(
@@ -345,6 +359,11 @@ const TaskCard = ({ task, onDelete, onToggle, onClick }) => (
           </div>
         )}
       </div>
+      {!task.completed && task.deadlineDate && (
+        <div className="text-[10px] uppercase tracking-[0.05em] text-rose-300 font-black">
+          {getTimeLeft(task.deadlineDate)}
+        </div>
+      )}
       <div className="flex gap-2">
         <button className="p-1 text-slate-300 hover:text-slate-900 transition-colors">
           <IconEdit size={16} />

@@ -2,6 +2,7 @@ import React from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MoreVertical, Plus, Calendar, Tag, CheckCircle2, Clock, AlertCircle, Circle } from 'lucide-react';
+import { getTimeLeft } from '../lib/utils.js';
 
 const COLUMNS = [
   { id: 'pending', title: 'To Do', icon: <Circle className="w-4 h-4 text-slate-400" /> },
@@ -41,19 +42,27 @@ const TaskCard = ({ task, index }) => (
         <h4 className="text-sm font-semibold text-slate-800 mb-1 line-clamp-2">{task.title}</h4>
         <p className="text-xs text-slate-500 mb-3 line-clamp-2">{task.description}</p>
         
-        <div className="flex items-center gap-3 mt-auto pt-3 border-t border-slate-100">
+        <div className="flex flex-col gap-2 mt-auto pt-3 border-t border-slate-100">
           {task.deadlineDate && (
-            <div className="flex items-center gap-1 text-[10px] text-slate-400">
+            <div className="flex items-center gap-1 text-[10px] text-rose-500 font-black">
               <Calendar className="w-3 h-3" />
-              <span>{new Date(task.deadlineDate).toLocaleDateString()}</span>
+              <span>{getTimeLeft(task.deadlineDate)}</span>
             </div>
           )}
-          {task.subtasks?.length > 0 && (
-            <div className="flex items-center gap-1 text-[10px] text-slate-400">
-              <CheckCircle2 className="w-3 h-3" />
-              <span>{task.subtasks.filter(s => s.completed).length}/{task.subtasks.length}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            {task.deadlineDate && (
+              <div className="flex items-center gap-1 text-[10px] text-slate-400">
+                <Calendar className="w-3 h-3" />
+                <span>{new Date(task.deadlineDate).toLocaleDateString()}</span>
+              </div>
+            )}
+            {task.subtasks?.length > 0 && (
+              <div className="flex items-center gap-1 text-[10px] text-slate-400">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>{task.subtasks.filter(s => s.completed).length}/{task.subtasks.length}</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     )}

@@ -146,56 +146,22 @@ export const IconLogOut = ({ size = 16, ...p }) => (
 );
 
 export const MemorizeLogo = ({ size = 32, animated = false, className = "" }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 40 40" 
-    fill="none"
+  <img
+    src="/logo.png"
+    width={size}
+    height={size}
     className={className}
-  >
-    {/* Background gradient */}
-    <defs>
-      <linearGradient id="logoBg" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#6366F1" />
-        <stop offset="100%" stopColor="#8B5CF6" />
-      </linearGradient>
-      <linearGradient id="logoAccent" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#FCD34D" />
-        <stop offset="100%" stopColor="#FBBF24" />
-      </linearGradient>
-    </defs>
-    
-    {/* Main rounded square background */}
-    <rect width="40" height="40" rx="8" fill="url(#logoBg)" />
-    
-    {/* Calendar grid pattern (task-like boxes) */}
-    {/* Top left box */}
-    <rect x="6" y="6" width="11" height="11" rx="2" fill="white" opacity="0.15" />
-    {/* Top right box */}
-    <rect x="23" y="6" width="11" height="11" rx="2" fill="url(#logoAccent)" />
-    
-    {/* Bottom left box */}
-    <rect x="6" y="23" width="11" height="11" rx="2" fill="white" opacity="0.2" />
-    {/* Bottom right box with checkmark */}
-    <rect x="23" y="23" width="11" height="11" rx="2" fill="white" opacity="0.25" />
-    
-    {/* Checkmark in bottom right */}
-    <g>
-      <path 
-        d="M28 30L31 33L36 27" 
-        stroke="url(#logoAccent)" 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-        fill="none"
-      />
-    </g>
-    
-    {/* Subtle accent line */}
-    <line x1="6" y1="18" x2="34" y2="18" stroke="white" strokeWidth="0.5" opacity="0.15" />
-  </svg>
+    alt="Memorizes logo"
+    style={{
+      display: 'block',
+      width: size,
+      height: size,
+      objectFit: 'contain',
+      objectPosition: 'top center',
+    }}
+  />
 );
 
 export const AppLogo = ({ size = 32, animated = false, className = "" }) => (
-  <MemorizeLogo size={size} animated={animated} className={className} />
+  <MemorizeLogo size={size} className={className} />
 );
